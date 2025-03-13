@@ -1,0 +1,267 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = Clinic_Management
+build_property.RootNamespace = Clinic_Management
+build_property.ProjectDir = C:\Users\Rohaan\source\repos\Clinic_Management\Clinic_Management\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\Rohaan\source\repos\Clinic_Management\Clinic_Management
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Admin/AddStaff.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQWRkU3RhZmYuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Admin/Contact.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQ29udGFjdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Admin/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Admin/Staff.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cU3RhZmYuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Doctor/AddSeminar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9jdG9yXEFkZFNlbWluYXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Doctor/AddSlots.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9jdG9yXEFkZFNsb3RzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Doctor/EditSeminar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9jdG9yXEVkaXRTZW1pbmFyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Doctor/EditSlot.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9jdG9yXEVkaXRTbG90LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Doctor/SeminarReport.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9jdG9yXFNlbWluYXJSZXBvcnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Doctor/ShowSeminars.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9jdG9yXFNob3dTZW1pbmFycy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Doctor/ShowSlots.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9jdG9yXFNob3dTbG90cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/About.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBYm91dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/Booking.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxCb29raW5nLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/CartItems.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDYXJ0SXRlbXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/Checkout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDaGVja291dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/checkPayment.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxjaGVja1BheW1lbnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/Contact.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDb250YWN0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/Doctors.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxEb2N0b3JzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/DoctorSlots.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxEb2N0b3JTbG90cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/Machines.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxNYWNoaW5lcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/MachinesDetail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxNYWNoaW5lc0RldGFpbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/MedicineDetail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxNZWRpY2luZURldGFpbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/Medicines.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxNZWRpY2luZXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/SeminarDetail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTZW1pbmFyRGV0YWlsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/Seminars.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTZW1pbmFycy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/ShowAppointments.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTaG93QXBwb2ludG1lbnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/ShowBookings.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTaG93Qm9va2luZ3MuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/ShowOrders.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTaG93T3JkZXJzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/UpdateProfile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxVcGRhdGVQcm9maWxlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Home/ViewOrder.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxWaWV3T3JkZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Pharmacist/CompletedOrders.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhhcm1hY2lzdFxDb21wbGV0ZWRPcmRlcnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Pharmacist/CreateCategory.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhhcm1hY2lzdFxDcmVhdGVDYXRlZ29yeS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Pharmacist/CreateMachine.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhhcm1hY2lzdFxDcmVhdGVNYWNoaW5lLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Pharmacist/CreateMedicine.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhhcm1hY2lzdFxDcmVhdGVNZWRpY2luZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Pharmacist/EditCategory.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhhcm1hY2lzdFxFZGl0Q2F0ZWdvcnkuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Pharmacist/EditMachine.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhhcm1hY2lzdFxFZGl0TWFjaGluZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Pharmacist/EditMedicine.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhhcm1hY2lzdFxFZGl0TWVkaWNpbmUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Pharmacist/MachineReport.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhhcm1hY2lzdFxNYWNoaW5lUmVwb3J0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Pharmacist/MedicineReport.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhhcm1hY2lzdFxNZWRpY2luZVJlcG9ydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Pharmacist/ShowCategory.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhhcm1hY2lzdFxTaG93Q2F0ZWdvcnkuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Pharmacist/ShowMachines.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhhcm1hY2lzdFxTaG93TWFjaGluZXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Pharmacist/ShowMedicine.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhhcm1hY2lzdFxTaG93TWVkaWNpbmUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Pharmacist/ShowOrders.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhhcm1hY2lzdFxTaG93T3JkZXJzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Pharmacist/ShowReviews.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhhcm1hY2lzdFxTaG93UmV2aWV3cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Pharmacist/ViewOrder.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhhcm1hY2lzdFxWaWV3T3JkZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Receptionist/AddLinkAppointment.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVjZXB0aW9uaXN0XEFkZExpbmtBcHBvaW50bWVudC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Receptionist/AddPatient.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVjZXB0aW9uaXN0XEFkZFBhdGllbnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Receptionist/EditPatient.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVjZXB0aW9uaXN0XEVkaXRQYXRpZW50LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Receptionist/Patient.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVjZXB0aW9uaXN0XFBhdGllbnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Receptionist/ShowAppointments.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVjZXB0aW9uaXN0XFNob3dBcHBvaW50bWVudHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Receptionist/ShowDoctors.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVjZXB0aW9uaXN0XFNob3dEb2N0b3JzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Receptionist/ShowSlots.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVjZXB0aW9uaXN0XFNob3dTbG90cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Shared/_Layout2.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/User/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/User/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxSZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Rohaan/source/repos/Clinic_Management/Clinic_Management/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-050w4s30ud
