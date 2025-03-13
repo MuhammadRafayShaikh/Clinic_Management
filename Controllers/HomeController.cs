@@ -690,7 +690,7 @@ namespace Clinic_Management.Controllers
 
             mailMessage.To.Add(HttpContext.Session.GetString("email"));
 
-            mailMessage.CC.Add("aptechrafay2@gmail.com");
+            mailMessage.CC.Add("");
 
             await smtpClient.SendMailAsync(mailMessage);
             await myDbContext.Bookings.AddAsync(new Booking { UserId = Convert.ToInt32(HttpContext.Session.GetString("id")), SeminarId = (int)id });
