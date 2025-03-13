@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\Clinic_Management.props" />
-</Project>
