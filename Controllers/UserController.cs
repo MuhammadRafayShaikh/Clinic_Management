@@ -101,13 +101,13 @@ namespace Clinic_Management.Controllers
                     var smtpClient = new SmtpClient("smtp.gmail.com")
                     {
                         Port = 587,
-                        Credentials = new NetworkCredential("rafayrashid457@gmail.com", "siuymtzsjdocebzk"),
+                        Credentials = new NetworkCredential("", ""),
                         EnableSsl = true,
                     };
 
                     var mailMessage = new MailMessage
                     {
-                        From = new MailAddress("rafayrashid457@gmail.com"),
+                        From = new MailAddress(""),
                         Subject = "Seminar Registration",
                         Body = $"Congratulations! Hi, {HttpContext.Session.GetString("name")}, You have successfully registered",
                         IsBodyHtml = false,
@@ -115,7 +115,7 @@ namespace Clinic_Management.Controllers
 
                     mailMessage.To.Add(HttpContext.Session.GetString("email"));
 
-                    mailMessage.CC.Add("aptechrafay2@gmail.com");
+                    mailMessage.CC.Add("");
 
                     await smtpClient.SendMailAsync(mailMessage);
                     TempData["success"] = "Successfully Registered";
