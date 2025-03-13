@@ -208,13 +208,13 @@ namespace Clinic_Management.Controllers
                     var smtpClient = new SmtpClient("smtp.gmail.com")
                     {
                         Port = 587,
-                        Credentials = new NetworkCredential("rafayrashid457@gmail.com", "siuymtzsjdocebzk"),
+                        Credentials = new NetworkCredential("", ""),
                         EnableSsl = true,
                     };
 
                     var mailMessage = new MailMessage
                     {
-                        From = new MailAddress("rafayrashid457@gmail.com"),
+                        From = new MailAddress(""),
                         Subject = "Staff Registration",
                         Body = $"Congratulations! Hi, {HttpContext.Session.GetString("name")}, You have successfully registered, Your Email is {user.Email} and Your Password is {NoHash}",
                         IsBodyHtml = false,
