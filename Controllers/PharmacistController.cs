@@ -200,13 +200,13 @@ namespace Clinic_Management.Controllers
                 var smtpClient = new SmtpClient("smtp.gmail.com")
                 {
                     Port = 587,
-                    Credentials = new NetworkCredential("rafayrashid457@gmail.com", "siuymtzsjdocebzk"),
+                    Credentials = new NetworkCredential("", ""),
                     EnableSsl = true,
                 };
 
                 var mailMessage = new MailMessage
                 {
-                    From = new MailAddress("rafayrashid457@gmail.com"),
+                    From = new MailAddress(""),
                     Subject = "Medicine Stock Request",
                     Body = $"Dear Supplier,\n\nWe need {quantity} units of {medicineName}.\nPlease confirm the availability.\n\nBest Regards,\nPharmacist",
                     IsBodyHtml = false,
@@ -214,7 +214,7 @@ namespace Clinic_Management.Controllers
 
                 mailMessage.To.Add(companyEmail);
 
-                mailMessage.CC.Add("aptechrafay2@gmail.com");
+                mailMessage.CC.Add("");
 
                 await smtpClient.SendMailAsync(mailMessage);
 
@@ -245,13 +245,13 @@ namespace Clinic_Management.Controllers
                 var smtpClient = new SmtpClient("smtp.gmail.com")
                 {
                     Port = 587,
-                    Credentials = new NetworkCredential("rafayrashid457@gmail.com", "siuymtzsjdocebzk"),
+                    Credentials = new NetworkCredential("", ""),
                     EnableSsl = true,
                 };
 
                 var mailMessage = new MailMessage
                 {
-                    From = new MailAddress("rafayrashid457@gmail.com"),
+                    From = new MailAddress(""),
                     Subject = "Machine Stock Request",
                     Body = $"Dear Supplier,\n\nWe need {quantity} units of {machineName}.\nPlease confirm the availability.\n\nBest Regards,\nPharmacist",
                     IsBodyHtml = false,
@@ -259,7 +259,7 @@ namespace Clinic_Management.Controllers
 
                 mailMessage.To.Add(companyEmail);
 
-                mailMessage.CC.Add("aptechrafay2@gmail.com");
+                mailMessage.CC.Add("");
 
                 await smtpClient.SendMailAsync(mailMessage);
 
@@ -754,20 +754,20 @@ namespace Clinic_Management.Controllers
                 var smtpClient = new SmtpClient("smtp.gmail.com")
                 {
                     Port = 587,
-                    Credentials = new NetworkCredential("rafayrashid457@gmail.com", "siuymtzsjdocebzk"),
+                    Credentials = new NetworkCredential("", ""),
                     EnableSsl = true
                 };
 
                 var mailMessage = new MailMessage
                 {
-                    From = new MailAddress("rafayrashid457@gmail.com"),
+                    From = new MailAddress(""),
                     Subject = "Payment & Delivery of Order",
                     Body = "Your Payment and Delivery has been completed successfully for Order Id: " + orderId,
                     IsBodyHtml = false,
                 };
 
                 mailMessage.To.Add(userEmail);
-                mailMessage.CC.Add("aptechrafay2@gmail.com");
+                mailMessage.CC.Add("");
                 await smtpClient.SendMailAsync(mailMessage);
 
                 order.PaymentStatus = "Paid";
@@ -786,20 +786,20 @@ namespace Clinic_Management.Controllers
                     var smtpClient = new SmtpClient("smtp.gmail.com")
                     {
                         Port = 587,
-                        Credentials = new NetworkCredential("rafayrashid457@gmail.com", "siuymtzsjdocebzk"),
+                        Credentials = new NetworkCredential("", ""),
                         EnableSsl = true
                     };
 
                     var mailMessage = new MailMessage
                     {
-                        From = new MailAddress("rafayrashid457@gmail.com"),
+                        From = new MailAddress(""),
                         Subject = "Payment of Order",
                         Body = "Your payment has been completed successfully for Order Id: " + orderId,
                         IsBodyHtml = false,
                     };
 
                     mailMessage.To.Add(userEmail);
-                    mailMessage.CC.Add("aptechrafay2@gmail.com");
+                    mailMessage.CC.Add("");
                     await smtpClient.SendMailAsync(mailMessage);
 
                     order.PaymentStatus = "Paid";
@@ -820,20 +820,20 @@ namespace Clinic_Management.Controllers
                     var smtpClient = new SmtpClient("smtp.gmail.com")
                     {
                         Port = 587,
-                        Credentials = new NetworkCredential("rafayrashid457@gmail.com", "siuymtzsjdocebzk"),
+                        Credentials = new NetworkCredential("", ""),
                         EnableSsl = true
                     };
 
                     var mailMessage = new MailMessage
                     {
-                        From = new MailAddress("rafayrashid457@gmail.com"),
+                        From = new MailAddress(""),
                         Subject = "Delivery of Order",
                         Body = "Your Delivery has been completed successfully for Order Id: " + orderId,
                         IsBodyHtml = false,
                     };
 
                     mailMessage.To.Add(userEmail);
-                    mailMessage.CC.Add("aptechrafay2@gmail.com");
+                    mailMessage.CC.Add("");
                     await smtpClient.SendMailAsync(mailMessage);
 
                     order.OrderStatus = "Completed";
@@ -853,7 +853,7 @@ namespace Clinic_Management.Controllers
             var smtpClient = new SmtpClient("smtp.gmail.com")
             {
                 Port = 587,
-                Credentials = new NetworkCredential("rafayrashid457@gmail.com", "siuymtzsjdocebzk"),
+                Credentials = new NetworkCredential("", ""),
                 EnableSsl = true
             };
 
@@ -916,19 +916,19 @@ namespace Clinic_Management.Controllers
         //    var smtpClient = new SmtpClient("smtp.gmail.com")
         //    {
         //        Port = 587,
-        //        Credentials = new NetworkCredential("rafayrashid457@gmail.com", "siuymtzsjdocebzk"),
+        //        Credentials = new NetworkCredential("", ""),
         //        EnableSsl = true
         //    };
 
         //    var mailMessage = new MailMessage
         //    {
-        //        From = new MailAddress("rafayrashid457@gmail.com"),
+        //        From = new MailAddress(""),
         //        Subject = "Just Testing",
         //        Body = "Hello, How Are You?",
         //        IsBodyHtml = false
         //    };
 
-        //    mailMessage.To.Add("aptechrafay2@gmail.com");
+        //    mailMessage.To.Add("");
 
         //    mailMessage.CC.Add("rafayshaikh405@gmail.com");
 
