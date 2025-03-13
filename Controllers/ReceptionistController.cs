@@ -372,13 +372,13 @@ namespace Clinic_Management.Controllers
                 var smtpClient = new SmtpClient("smtp.gmail.com")
                 {
                     Port = 587,
-                    Credentials = new NetworkCredential("rafayrashid457@gmail.com", "siuymtzsjdocebzk"),
+                    Credentials = new NetworkCredential("", ""),
                     EnableSsl = true,
                 };
 
                 var mailMessage = new MailMessage
                 {
-                    From = new MailAddress("rafayrashid457@gmail.com"),
+                    From = new MailAddress(""),
                     Subject = "Reschedule Appointment",
                     Body = $"Dear Patient, <br/><br/>Your appointment has been rescheduled from <b>{oldTimeSlot.Date + oldTimeSlot.StartTime + oldTimeSlot.EndTime}</b> to <b>{newTimeSlot.Date + newTimeSlot.StartTime + newTimeSlot.EndTime}</b>. <br/><br/>Thank you.",
                     IsBodyHtml = false,
@@ -387,7 +387,7 @@ namespace Clinic_Management.Controllers
 
                 mailMessage.To.Add(userEmail.Email);
 
-                mailMessage.CC.Add("aptechrafay2@gmail.com");
+                mailMessage.CC.Add("");
 
                 await smtpClient.SendMailAsync(mailMessage);
                 return Json(new { success = true, message = "Appointment updated successfully!" });
