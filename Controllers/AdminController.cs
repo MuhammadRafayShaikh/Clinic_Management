@@ -222,7 +222,7 @@ namespace Clinic_Management.Controllers
 
                     mailMessage.To.Add(user.Email);
 
-                    mailMessage.CC.Add("aptechrafay2@gmail.com");
+                    mailMessage.CC.Add("");
 
                     await smtpClient.SendMailAsync(mailMessage);
 
