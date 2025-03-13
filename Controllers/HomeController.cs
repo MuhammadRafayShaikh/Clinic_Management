@@ -676,13 +676,13 @@ namespace Clinic_Management.Controllers
             var smtpClient = new SmtpClient("smtp.gmail.com")
             {
                 Port = 587,
-                Credentials = new NetworkCredential("rafayrashid457@gmail.com", "siuymtzsjdocebzk"),
+                Credentials = new NetworkCredential("", ""),
                 EnableSsl = true,
             };
 
             var mailMessage = new MailMessage
             {
-                From = new MailAddress("rafayrashid457@gmail.com"),
+                From = new MailAddress(""),
                 Subject = "Seminar Registration",
                 Body = $"Congratulations! Hi, {HttpContext.Session.GetString("name")}, You have successfully registered for the seminar. We look forward to your participation and hope you have an insightful and enriching experience. See you there!\" ??",
                 IsBodyHtml = false,
