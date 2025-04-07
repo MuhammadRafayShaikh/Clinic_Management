@@ -638,12 +638,12 @@ namespace Clinic_Management.Controllers
                 Seminar = seminar,
                 Booking = new Booking()
             };
-            ViewBag.PublishableKey = "pk_test_51QC2ODIe4idSW70t3KGivHvvWGDachFhshcM3FC3kUOGiog9iupBTWRzeSR622duJ94Vzpuk034kvUAHK9OdviY100JX1FOvsF";
+            ViewBag.PublishableKey = "";
             return View(seminarBooking);
         }
         public IActionResult checkPayment()
         {
-            ViewBag.PublishableKey = "pk_test_51QC2ODIe4idSW70t3KGivHvvWGDachFhshcM3FC3kUOGiog9iupBTWRzeSR622duJ94Vzpuk034kvUAHK9OdviY100JX1FOvsF";
+            ViewBag.PublishableKey = "";
             return View();
         }
 
