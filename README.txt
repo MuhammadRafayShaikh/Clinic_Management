@@ -36,10 +36,10 @@ To enable email sending features (like appointment confirmation, register, etc.)
 
 json
 "EmailSettings": {
-  "SMTPHost": "smtp.yourmailprovider.com",
-  "SMTPPort": 587,
-  "SenderEmail": "youremail@example.com",
-  "SenderPassword": "your_email_password",
+  "Host": "smtp.yourmailprovider.com",
+  "Port": 587,
+  "UserName": "youremail@example.com",
+  "Password": "your_email_password",
   "CCEmail": "youremail@example.com"
 }
 
