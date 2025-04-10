@@ -152,6 +152,8 @@ namespace Clinic_Management.Controllers
             return View();
 
         }
+
+        [ValidateAntiForgeryToken]
         [AdminFilter]
         [HttpPost]
         public async Task<IActionResult> AddStaff(User user, IFormFile? Image)

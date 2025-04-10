@@ -40,6 +40,7 @@ global.json
 **/project.fragment.lock.json
 .vs/
 
+
 # NuGet
 *.nupkg
 **/packages/*

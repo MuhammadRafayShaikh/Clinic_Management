@@ -38,6 +38,8 @@ namespace Clinic_Management.Controllers
             //return Json(doctors);
             return View(manage_Appointment);
         }
+
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> AddPatient(Manage_Appointment manage_appointment)
         {
@@ -79,6 +81,8 @@ namespace Clinic_Management.Controllers
 
             return View(patient);
         }
+
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> EditPatient(Patient patient)
         {
@@ -100,6 +104,7 @@ namespace Clinic_Management.Controllers
             return NotFound();
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> DeletePatient(int? id)
         {
@@ -157,6 +162,7 @@ namespace Clinic_Management.Controllers
             return Json(times);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> NewAppointment(Appointments appointment)
         {
@@ -216,6 +222,8 @@ namespace Clinic_Management.Controllers
             //return Json(slots);
 
         }
+
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> AddAppointment(Appointments appointments)
         {
@@ -244,6 +252,8 @@ namespace Clinic_Management.Controllers
             };
             return View(manage_Appointment);
         }
+
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> AddLinkAppointment(Appointments appointments)
         {
@@ -347,6 +357,7 @@ namespace Clinic_Management.Controllers
             return Json(availableTimes);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> UpdateAppointment(int patientId, int dateId, int time)
         {
@@ -410,6 +421,8 @@ namespace Clinic_Management.Controllers
             }
 
         }
+
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<JsonResult> CancelAppointment(int appointmentId)
         {
@@ -464,10 +477,5 @@ namespace Clinic_Management.Controllers
 
             return Json(new { success = true, message = "Appointment Compeleted Successfully" });
         }
-
-
-
-
-
     }
 }

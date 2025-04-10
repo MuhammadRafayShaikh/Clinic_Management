@@ -47,6 +47,8 @@ namespace Clinic_Management.Controllers
         {
             return View();
         }
+
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult AddSlots(DateTime startDate, DateTime endDate, string startTime, string endTime)
         {
@@ -129,6 +131,8 @@ namespace Clinic_Management.Controllers
             //return Json(times);
             return View(times);
         }
+
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<JsonResult> RemoveSlot(int slot_id)
         {
@@ -169,6 +173,7 @@ namespace Clinic_Management.Controllers
         //    //var newendtime = TimeSpan.Parse(NewEndTime[index]);
         //    //return BadRequest("New start time aur end time required hain.");
         //}
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> EditSlots(List<int> SlotIds, List<string> StartTime, List<string> EndTime, List<string> NewStartTime, List<string> NewEndTime, DateTime SlotDate)
         {
@@ -237,6 +242,8 @@ namespace Clinic_Management.Controllers
         {
             return View();
         }
+
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> AddSeminar([Bind("Id,Title,Description,DateTime")] Seminar seminar, IFormFile Image)
         {
@@ -326,6 +333,8 @@ namespace Clinic_Management.Controllers
             }
             return View(seminar);
         }
+
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> EditSeminar([Bind("Id,Title,Description,DateTime")] Seminar seminar, IFormFile Image)
         {
@@ -456,7 +465,5 @@ namespace Clinic_Management.Controllers
 
             return View();
         }
-
-
     }
 }

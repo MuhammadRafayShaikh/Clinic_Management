@@ -6,6 +6,7 @@ using Microsoft.VisualBasic;
 using System.Net.Mail;
 using System.Net;
 using Microsoft.Extensions.Options;
+using System.Text;
 
 namespace Clinic_Management.Controllers
 {
@@ -14,14 +15,35 @@ namespace Clinic_Management.Controllers
         private readonly myDbContext myDbContext;
         private readonly IWebHostEnvironment webHostEnvironment;
         private readonly EmailSettings emailSettings;
-        public UserController(myDbContext myDbContext, IWebHostEnvironment webHostEnvironment, IOptions<EmailSettings> emailSettings)
+        public UserController(
+            myDbContext myDbContext,
+            IWebHostEnvironment webHostEnvironment,
+            IOptions<EmailSettings> emailSettings
+            )
         {
             this.webHostEnvironment = webHostEnvironment;
             this.myDbContext = myDbContext;
             this.emailSettings = emailSettings.Value;
         }
-        public IActionResult Register(string? email = null)
+        public IActionResult Register(string? email = null, string? returnUrl = null)
         {
+            try
+            {
+                if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    var urlBytes = Convert.FromBase64String(returnUrl);
+                    var decodeUrl = Encoding.UTF8.GetString(urlBytes);
+                    if (Url.IsLocalUrl(decodeUrl))
+                    {
+                        TempData["returnUrl"] = decodeUrl;
+                    }
+                }
+            }
+            catch
+            {
+                TempData["returnUrl"] = null;
+            }
+
             if (email != null)
             {
                 if (!string.IsNullOrEmpty(HttpContext.Session.GetString("id")))
@@ -36,9 +58,12 @@ namespace Clinic_Management.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
+
+        [ValidateAntiForgeryToken]
         [HttpPost]
-        public async Task<IActionResult> Register(User user, IFormFile? Image)
+        public async Task<IActionResult> Register(User user, IFormFile? Image, string? remember)
         {
+            //return Json(remember);
             //return Json(Image);
             //return Json(user);
             if (string.IsNullOrEmpty(user.Phone))
@@ -85,9 +110,9 @@ namespace Clinic_Management.Controllers
                     user.Image = "user.png";
                 }
                 var user_email = await myDbContext.Users.Where(x => x.Email == user.Email).FirstOrDefaultAsync();
+
                 if (user_email == null)
                 {
-
                     var hash = new PasswordHasher<User>();
                     user.Password = hash.HashPassword(user, user.Password);
                     if (user.Gender == null)
@@ -115,6 +140,9 @@ namespace Clinic_Management.Controllers
                         HttpContext.Session.SetString("gender", user.Gender.ToString());
                         HttpContext.Session.SetString("medicalhistory", user.MedicalHistory);
                     }
+
+                    this.CookiesSet(user, remember);
+
                     var smtpClient = new SmtpClient(emailSettings.Host)
                     {
                         Port = emailSettings.Port,
@@ -137,7 +165,6 @@ namespace Clinic_Management.Controllers
                     await smtpClient.SendMailAsync(mailMessage);
                     TempData["success"] = "Successfully Registered";
                     return RedirectToAction("Index", "Home");
-
                 }
                 else
                 {
@@ -155,11 +182,15 @@ namespace Clinic_Management.Controllers
             bool user_email;
             if (HttpContext.Session.GetString("id") == null)
             {
-                user_email = await myDbContext.Users.Where(x => x.Email == email).AnyAsync();
+                user_email = await myDbContext.Users
+                    .Where(x => x.Email == email)
+                    .AnyAsync();
             }
             else
             {
-                user_email = await myDbContext.Users.Where(x => x.Email == email && x.Id != Convert.ToInt32(HttpContext.Session.GetString("id"))).AnyAsync();
+                user_email = await myDbContext.Users
+                    .Where(x => x.Email == email && x.Id != Convert.ToInt32(HttpContext.Session.GetString("id")))
+                    .AnyAsync();
             }
 
             if (user_email)
@@ -174,7 +205,25 @@ namespace Clinic_Management.Controllers
 
         public IActionResult Login(string? returnUrl)
         {
-            TempData["returnUrl"] = returnUrl;
+            //return Json(returnUrl.ToArray());
+            //return Json(returnUrl);
+            try
+            {
+                if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    var bytesUrl = Convert.FromBase64String(returnUrl);
+                    var decodeUrl = Encoding.UTF8.GetString(bytesUrl);
+                    if (Url.IsLocalUrl(decodeUrl))
+                    {
+                        TempData["returnUrl"] = decodeUrl;
+                    }
+                }
+            }
+            catch
+            {
+                TempData["returnUrl"] = null;
+            }
+            //TempData["returnUrl"] = returnUrl;
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("id")))
             {
                 return View();
@@ -182,8 +231,9 @@ namespace Clinic_Management.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
-        public async Task<IActionResult> Login(User user, string? returnUrl)
+        public async Task<IActionResult> Login(User user, string? returnUrl, string remember)
         {
             if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
             {
@@ -200,6 +250,12 @@ namespace Clinic_Management.Controllers
 
                 if (result == PasswordVerificationResult.Success)
                 {
+                    HttpContext.Session.SetString("id", userData.Id.ToString());
+                    HttpContext.Session.SetString("name", userData.Name);
+                    HttpContext.Session.SetString("email", userData.Email);
+                    HttpContext.Session.SetString("role", userData.Role.ToString());
+                    HttpContext.Session.SetString("image", userData.Image);
+                    HttpContext.Session.SetString("password", userData.Password);
                     if (userData.Role == 3)
                     {
                         HttpContext.Session.SetString("gender", userData.Gender.ToString());
@@ -207,27 +263,16 @@ namespace Clinic_Management.Controllers
                     }
                     if (userData.Role == 0 || userData.Role == 1 || userData.Role == 3)
                     {
-
-                        HttpContext.Session.SetString("id", userData.Id.ToString());
-                        HttpContext.Session.SetString("name", userData.Name);
-                        HttpContext.Session.SetString("email", userData.Email);
                         HttpContext.Session.SetString("phone", userData.Phone);
                         HttpContext.Session.SetString("address", userData.Address);
-                        HttpContext.Session.SetString("role", userData.Role.ToString());
-                        HttpContext.Session.SetString("image", userData.Image);
-                        HttpContext.Session.SetString("password", userData.Password);
-
                     }
                     else
                     {
-                        HttpContext.Session.SetString("id", userData.Id.ToString());
-                        HttpContext.Session.SetString("name", userData.Name);
-                        HttpContext.Session.SetString("email", userData.Email);
                         HttpContext.Session.SetString("staff_role", userData.Staff_Role.ToString());
-                        HttpContext.Session.SetString("role", userData.Role.ToString());
-                        HttpContext.Session.SetString("image", userData.Image);
-                        HttpContext.Session.SetString("password", userData.Password);
                     }
+
+                    this.CookiesSet(userData, remember);
+
                     TempData["successLogin"] = "Successfully Login";
                     if (userData.Role == 0 || userData.Role == 3)
                     {
@@ -262,11 +307,68 @@ namespace Clinic_Management.Controllers
                 return View(user);
             }
             return View(user);
+
         }
+        private void CookiesSet(User userData, string? remember)
+        {
+            if (remember == "true")
+            {
+                var cookieOptions = new CookieOptions
+                {
+                    Expires = DateTime.Now.AddDays(7),
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict
+                };
+                Response.Cookies.Append("id", userData.Id.ToString(), cookieOptions);
+                Response.Cookies.Append("name", userData.Name, cookieOptions);
+                Response.Cookies.Append("email", userData.Email, cookieOptions);
+                Response.Cookies.Append("role", userData.Role.ToString(), cookieOptions);
+                Response.Cookies.Append("image", userData.Image, cookieOptions);
+                if (userData.Role == 3)
+                {
+                    Response.Cookies.Append("gender", userData.Gender.ToString(), cookieOptions);
+                    Response.Cookies.Append("medicalhistory", userData.MedicalHistory, cookieOptions);
+                }
+                if (userData.Role == 0 || userData.Role == 1 || userData.Role == 3)
+                {
+                    Response.Cookies.Append("phone", userData.Phone, cookieOptions);
+                    Response.Cookies.Append("address", userData.Address, cookieOptions);
+                }
+                else
+                {
+                    Response.Cookies.Append("staff_role", userData.Staff_Role.ToString(), cookieOptions);
+                }
+            }
+        }
+
         [AuthenticationFilter]
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
+            Response.Cookies.Delete("id");
+            Response.Cookies.Delete("name");
+            Response.Cookies.Delete("email");
+            Response.Cookies.Delete("role");
+            Response.Cookies.Delete("image");
+
+            if (Request.Cookies["role"] == "3")
+            {
+                Response.Cookies.Delete("gender");
+                Response.Cookies.Delete("medicalhistory");
+            }
+
+            if (Request.Cookies["role"] == "0" || Request.Cookies["role"] == "1" || Request.Cookies["role"] == "3")
+            {
+                Response.Cookies.Delete("phone");
+                Response.Cookies.Delete("address");
+            }
+
+            else
+            {
+                Response.Cookies.Delete("staff_role");
+            }
+
             return RedirectToAction("Index", "Home");
         }
     }

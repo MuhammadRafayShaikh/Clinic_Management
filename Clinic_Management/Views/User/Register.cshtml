@@ -70,14 +70,19 @@
                         <div class="mb-3">
                             <label asp-for="Image" class="form-label">Image <span style="font-weight:500;">(Optional)</span></label>
                             <input type="file" onchange="document.querySelector('#old_image').src=window.URL.createObjectURL(this.files[0])" asp-for="Image" class="form-control">
-                            <img src="" height="125px" id="old_image" style="float:left; margin-bottom:20px;" />
+                            <img src="" height="125px" id="old_image" class="mt-3" margin-bottom:20px;" />
                             <span asp-validation-for="Image" class="text-danger"></span>
                         </div>
 
+                        <div>
+                            <label class="mt-1 mb-4">Remember Me</label>
+                            <input type="checkbox" value="true" name="remember" />
+                        </div>
                         <input type="submit" class="btn btn-primary w-100" value="Sign Up">
+                        <div class="d-flex align-items-center justify-content-center mt-4">
+                            <a class="text-primary fw-bold ms-2" asp-controller="User" asp-action="Login">Already have an account</a>
+                        </div>
                     </form>
-
-
 
                     <form id="patientForm" asp-controller="User" asp-action="Register" enctype="multipart/form-data" method="post" style="display: none;">
                         <h4 class="text-center">Patient Registration</h4>
@@ -124,7 +129,13 @@
                             <textarea asp-for="MedicalHistory" class="form-control"></textarea>
                             <span asp-validation-for="MedicalHistory" class="text-danger"></span>
                         </div>
+                        <br />
+                        <label class="mt-2 mb-4">Remember Me</label>
+                        <input type="checkbox" value="true" name="remember" />
                         <input type="submit" class="btn btn-primary w-100" value="Sign Up">
+                        <div class="d-flex align-items-center justify-content-center mt-4">
+                            <a class="text-primary fw-bold ms-2" asp-controller="User" asp-action="Login">Already have an account</a>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -145,20 +156,20 @@
             });
         });
 
-        $(document).ready(function(){
-            function toggleForms(){
+        $(document).ready(function () {
+            function toggleForms() {
                 var selected = $("#userType").val();
-            if(selected === "user"){
-                $("#userForm").show();
-                $("#patientForm").hide();
-            }else{
-                $("#userForm").hide();
-                $("#patientForm").show();
-            }
+                if (selected === "user") {
+                    $("#userForm").show();
+                    $("#patientForm").hide();
+                } else {
+                    $("#userForm").hide();
+                    $("#patientForm").show();
+                }
             }
             toggleForms();
 
-            $("#userType").on("change", function(){
+            $("#userType").on("change", function () {
                 toggleForms();
             })
         })
@@ -172,26 +183,26 @@
         @if (TempData["email_err"] != null)
         {
             <text>
-                                    Swal.fire({
-                                        title: 'Error!',
-                                    text: '@TempData["email_err"]',
-                                    icon: 'error',
-                                    confirmButtonText: 'Okay'
-                                        });
+                        Swal.fire({
+                            title: 'Error!',
+                        text: '@TempData["email_err"]',
+                        icon: 'error',
+                        confirmButtonText: 'Okay'
+                                                                });
             </text>
         }
         @if (TempData["error"] != null)
         {
             <text>
-                                    Swal.fire({
-                                        title: 'Error!',
-                                    text: '@TempData["error"]',
-                                    icon: 'error',
-                                    confirmButtonText: 'Okay'
-                                                    });
+                        Swal.fire({
+                            title: 'Error!',
+                        text: '@TempData["error"]',
+                        icon: 'error',
+                        confirmButtonText: 'Okay'
+                                                                            });
             </text>
         }
-            });
+                            });
     </script>
 
 

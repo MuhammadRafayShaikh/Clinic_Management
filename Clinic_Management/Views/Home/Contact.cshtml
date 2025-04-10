@@ -47,9 +47,13 @@
             </div>
             <div class="col-xl-4 col-lg-6 wow slideInUp" data-wow-delay="0.3s">
                 <form asp-controller="Home" asp-action="Contact" method="post">
+                    @using System.Text
+                    <input type="hidden" name="returnUrlContact" value="@Convert.ToBase64String(Encoding.UTF8.GetBytes(Context.Request.Path))" />
                     @{
                         string onlyready;
-                        if (accessor.HttpContext.Session.Keys.Contains("id"))
+                        bool sessionId = accessor.HttpContext.Session.Keys.Contains("id");
+                        bool cookieId = accessor.HttpContext.Request.Cookies.Keys.Contains("id");
+                        if (sessionId || cookieId)
                         {
                             onlyready = "readonly";
                         }
@@ -57,22 +61,42 @@
                         {
                             onlyready = "";
                         }
+
+                        string userName = "";
+                        string userEmail = "";
+                        if (sessionId || cookieId)
+                        {
+                            userName = accessor.HttpContext.Session.GetString("name");
+                            if (string.IsNullOrEmpty(userName))
+                            {
+                                userName = accessor.HttpContext.Request.Cookies["name"];
+                            }
+
+                            userEmail = accessor.HttpContext.Session.GetString("email");
+                            if (string.IsNullOrEmpty(userEmail))
+                            {
+                                userEmail = accessor.HttpContext.Request.Cookies["email"];
+                            }
+                        }
+
                     }
                     <div class="row g-3">
                         <div class="col-12">
-                            <input type="text" @onlyready value="@accessor.HttpContext.Session.GetString("name")" class="form-control border-0 bg-light px-4" placeholder="Your Name" style="height: 55px;">
+                            <input type="text" @onlyready value="@userName" class="form-control border-0 bg-light px-4" placeholder="Your Name" style="height: 55px;">
                         </div>
                         <div class="col-12">
-                            <input type="email" @onlyready value="@accessor.HttpContext.Session.GetString("email")" class="form-control border-0 bg-light px-4" placeholder="Your Email" style="height: 55px;">
+                            <input type="email" @onlyready value="@userEmail" class="form-control border-0 bg-light px-4" placeholder="Your Email" style="height: 55px;">
                         </div>
                         <div class="col-12">
-                            <input type="text" asp-for="Subject" class="form-control border-0 bg-light px-4" placeholder="Subject" style="height: 55px;">
+                            <input type="text" value="@accessor.HttpContext.Session.GetString("subject")" id="subject" asp-for="Subject" class="form-control border-0 bg-light px-4" placeholder="Subject" style="height: 55px;">
+                            <span asp-validation-for="Subject" class="text-danger"></span>
                         </div>
                         <div class="col-12">
-                            <textarea asp-for="Message" class="form-control border-0 bg-light px-4 py-3" rows="5" placeholder="Message"></textarea>
+                            <textarea asp-for="Message" class="form-control border-0 bg-light px-4 py-3" rows="5" placeholder="Message">@accessor.HttpContext.Session.GetString("message")</textarea>
+                            <span asp-validation-for="Message" class="text-danger"></span>
                         </div>
                         <div class="col-12">
-                            <button class="btn btn-primary w-100 py-3" type="submit">Send Message</button>
+                            <button id="submitbtn" class="btn btn-primary w-100 py-3" type="submit">Send Message</button>
                         </div>
                     </div>
                 </form>
@@ -90,9 +114,13 @@
 
 <script>
     $(document).ready(function () {
-    @if (!accessor.HttpContext.Session.Keys.Contains("id"))
+
+        $("#Message").val('@accessor.HttpContext.Session.GetString("message")');
+
+    @if (!accessor.HttpContext.Session.Keys.Contains("id") && !accessor.HttpContext.Request.Cookies.Keys.Contains("id"))
     {
         <text>
+
                     toastr.warning("Please login first to contact with us");
         </text>
     }
@@ -104,7 +132,7 @@
                     text: '@TempData["success"]',
                     icon: 'success',
                     confirmButtonText: 'Okay'
-                                                                            });
+                                                                                                                            });
         </text>
     }
     @if (TempData["successLogin"] != null)
@@ -113,5 +141,6 @@
                     toastr.success('@TempData["successLogin"]');
         </text>
     }
-        })
+
+                                })
 </script>

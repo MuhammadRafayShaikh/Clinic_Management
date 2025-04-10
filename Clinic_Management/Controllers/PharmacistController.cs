@@ -31,8 +31,8 @@ namespace Clinic_Management.Controllers
         {
             return View();
         }
+        [ValidateAntiForgeryToken]
         [HttpPost]
-
         public async Task<IActionResult> CreateCategory([Bind("Id,Name")] Category category)
         {
             if (ModelState.IsValid)
@@ -68,8 +68,8 @@ namespace Clinic_Management.Controllers
             return View(category);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
-
         public async Task<IActionResult> EditCategory(Category category)
         {
             if (category == null)
@@ -87,7 +87,7 @@ namespace Clinic_Management.Controllers
             }
             return View(category);
         }
-
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> DeleteCategory(int? id)
         {
@@ -135,6 +135,7 @@ namespace Clinic_Management.Controllers
             return View();
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> CreateMedicine(MedicineBatchViewModel medicineBatchViewModel, IFormFile Image)
         {
@@ -184,7 +185,7 @@ namespace Clinic_Management.Controllers
         }
 
 
-
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> SendMail(string medicineName, int quantity, string companyEmail)
         {
@@ -230,6 +231,8 @@ namespace Clinic_Management.Controllers
 
             return RedirectToAction("ShowMedicine");
         }
+
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> SendMachineMail(string machineName, int quantity, string companyEmail)
         {
@@ -325,6 +328,8 @@ namespace Clinic_Management.Controllers
             ViewBag.categories = categories;
             return View(medicineBatchViewModel);
         }
+
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> EditMedicine(MedicineBatchViewModel medicineBatchViewModel, IFormFile? Image, string oldImage)
         {
@@ -389,6 +394,8 @@ namespace Clinic_Management.Controllers
             ViewBag.categories = categories;
             return View(medicine);
         }
+
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> EditMachine(MedicalInstrument medicalInstrument, IFormFile? Image)
         {
@@ -518,6 +525,7 @@ namespace Clinic_Management.Controllers
             return View();
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> CreateMachine(MedicalInstrument medicalInstrument, IFormFile Image)
         {
@@ -721,6 +729,8 @@ namespace Clinic_Management.Controllers
 
             return View(ordersManages);
         }
+
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> UpdateOrder(int? orderId, string userEmail, int? paymentStatus, int? deliveryStatus)
         {

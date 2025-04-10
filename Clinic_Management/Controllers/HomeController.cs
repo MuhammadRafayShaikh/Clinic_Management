@@ -20,6 +20,7 @@ using System.Reflection.PortableExecutable;
 using static System.Net.Mime.MediaTypeNames;
 using Microsoft.AspNetCore.Identity;
 using Stripe.Climate;
+using System.Text;
 
 namespace Clinic_Management.Controllers
 {
@@ -52,6 +53,31 @@ namespace Clinic_Management.Controllers
         public async Task<IActionResult> Index()
 
         {
+            var cookies = HttpContext.Request.Cookies;
+            if (HttpContext.Request.Cookies.Keys.Contains("id"))
+            {
+                var user = await myDbContext.Users.FindAsync(Convert.ToInt32(cookies["id"]));
+                HttpContext.Session.SetString("id", cookies["id"]);
+                HttpContext.Session.SetString("name", cookies["name"]);
+                HttpContext.Session.SetString("email", cookies["email"]);
+                HttpContext.Session.SetString("role", cookies["role"]);
+                HttpContext.Session.SetString("image", cookies["image"]);
+                HttpContext.Session.SetString("password", user.Password);
+                if (cookies["role"] == "3")
+                {
+                    HttpContext.Session.SetString("gender", cookies["gender"]);
+                    HttpContext.Session.SetString("medicalhistory", cookies["medicalhistory"]);
+                }
+                if (cookies["role"] == "0" || cookies["role"] == "1" || cookies["role"] == "3")
+                {
+                    HttpContext.Session.SetString("phone", cookies["phone"]);
+                    HttpContext.Session.SetString("address", cookies["address"]);
+                }
+                else
+                {
+                    HttpContext.Session.SetString("staff_role", cookies["staff_role"]);
+                }
+            }
             ViewData["CurrentAction"] = "Index";
             ViewData["CurrentController"] = "Home";
             ViewBag.doctors = await myDbContext.Users.Where(x => x.Staff_Role == StaffRole.Doctor).ToListAsync();
@@ -63,11 +89,11 @@ namespace Clinic_Management.Controllers
                 .ToListAsync();
 
             var machines2 = await myDbContext.MedicalInstruments
-            .Include(x => x.Category)
-            .OrderByDescending(x => x.Id)
-            .Skip(2)
-            .Take(2)
-            .ToListAsync();
+                .Include(x => x.Category)
+                .OrderByDescending(x => x.Id)
+                .Skip(2)
+                .Take(2)
+                .ToListAsync();
 
             var doctors = await myDbContext.Users
                 .Where(x => x.Staff_Role == StaffRole.Doctor)
@@ -189,12 +215,11 @@ namespace Clinic_Management.Controllers
                 .Count();
 
             var averageRating = myDbContext.Reviews
-            .Where(r => r.ProductId == id && r.ProductType == "Medicine")
-            .Select(r => (double?)r.Rating)
-            .Average() ?? 0;
+                .Where(r => r.ProductId == id && r.ProductType == "Medicine")
+                .Select(r => (double?)r.Rating)
+                .Average() ?? 0;
 
             ViewBag.AverageRating = Math.Round(averageRating, 1);
-
 
             ViewBag.completedOrder = completedOrder;
 
@@ -233,6 +258,7 @@ namespace Clinic_Management.Controllers
             ViewBag.cart2 = cart2;
             return View(carts);
         }
+        [ValidateAntiForgeryToken]
         [AuthenticationFilter]
         [HttpPost]
         public async Task<IActionResult> AddCart(int? MedicineId, string ProductType)
@@ -336,6 +362,7 @@ namespace Clinic_Management.Controllers
 
             return Json(new { success = true, message = "Quantity Update Successfully" });
         }
+        [ValidateAntiForgeryToken]
         [AuthenticationFilter]
         [HttpPost]
         public async Task<JsonResult> RemoveCart(int? cartId)
@@ -384,6 +411,7 @@ namespace Clinic_Management.Controllers
             return cartItems;
             //return 1;
         }
+        [ValidateAntiForgeryToken]
         [AuthenticationFilter]
         [HttpPost]
         public async Task<IActionResult> PlaceOrder()
@@ -558,10 +586,10 @@ namespace Clinic_Management.Controllers
                 return NotFound();
             }
             var reviews = await myDbContext.Reviews
-                    .Include(x => x.User)
-                    .Where(x => x.ProductId == id && x.ProductType == "MedicalInstrument")
-                    .OrderByDescending(x => x.Id)
-                    .ToListAsync();
+                .Include(x => x.User)
+                .Where(x => x.ProductId == id && x.ProductType == "MedicalInstrument")
+                .OrderByDescending(x => x.Id)
+                .ToListAsync();
 
             var completedOrder = myDbContext.OrderItems
                 .Include(x => x.Order)
@@ -578,13 +606,11 @@ namespace Clinic_Management.Controllers
                 .Count();
 
             var averageRating = myDbContext.Reviews
-            .Where(r => r.ProductId == id && r.ProductType == "MedicalInstrument")
-            .Select(r => (double?)r.Rating)
-            .Average() ?? 0;
+                .Where(r => r.ProductId == id && r.ProductType == "MedicalInstrument")
+                .Select(r => (double?)r.Rating)
+                .Average() ?? 0;
 
             ViewBag.AverageRating = Math.Round(averageRating, 1);
-
-
 
             ViewBag.reviews = reviews;
 
@@ -706,8 +732,8 @@ namespace Clinic_Management.Controllers
 
             return RedirectToAction("ShowBookings");
 
-
         }
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> Booking(int? seminarId, int? price)
         {
@@ -759,7 +785,6 @@ namespace Clinic_Management.Controllers
             var service = new SessionService();
             Session session = service.Create(options);
 
-
             return Json(new { id = session.Id });
         }
 
@@ -771,10 +796,8 @@ namespace Clinic_Management.Controllers
         [PatientFilter]
         public async Task<IActionResult> DoctorSlots(int? id)
         {
-
             if (id != null)
             {
-
                 var slots = await myDbContext.DoctorTimeSlots.Include(x => x.Doctor).Where(x => x.DoctorId == id && x.Status == 0).ToListAsync();
                 var patients = await myDbContext.Patients.OrderBy(x => x.Id).ToListAsync();
                 Manage_Appointment manage_Appointment = new Manage_Appointment()
@@ -794,6 +817,7 @@ namespace Clinic_Management.Controllers
             //return Json(slots);
 
         }
+        [ValidateAntiForgeryToken]
         [PatientFilter]
         [HttpPost]
         public async Task<IActionResult> AddAppointment(Appointments appointments)
@@ -815,9 +839,18 @@ namespace Clinic_Management.Controllers
         }
         public async Task<IActionResult> ShowAppointments()
         {
-            var appointments = await myDbContext.Appointments.Include(x => x.DoctorUser).Include(x => x.TimeSlot).Include(x => x.PatientUser).Where(x => x.PatientUser.Id == Convert.ToInt32(HttpContext.Session.GetString("id"))).OrderByDescending(x => x.Id).ToListAsync();
-            var users = await myDbContext.Users.Where(x => x.Staff_Role == StaffRole.Doctor).ToListAsync();
-            var timeslots = await myDbContext.DoctorTimeSlots.ToListAsync();
+            var appointments = await myDbContext.Appointments
+                .Include(x => x.DoctorUser)
+                .Include(x => x.TimeSlot)
+                .Include(x => x.PatientUser)
+                .Where(x => x.PatientUser.Id == Convert.ToInt32(HttpContext.Session.GetString("id")))
+                .OrderByDescending(x => x.Id)
+                .ToListAsync();
+            var users = await myDbContext.Users
+                .Where(x => x.Staff_Role == StaffRole.Doctor)
+                .ToListAsync();
+            var timeslots = await myDbContext.DoctorTimeSlots
+                .ToListAsync();
             Manage_Appointment manage_Appointment = new Manage_Appointment()
             {
                 All_Appointment = appointments,
@@ -916,15 +949,16 @@ namespace Clinic_Management.Controllers
         {
             return View();
         }
-
+        [ValidateAntiForgeryToken]
         [AuthenticationFilter]
         [HttpPost]
         public async Task<IActionResult> UpdateProfile(User user, IFormFile? Image)
         {
+            //return Json(user);
             ModelState.Remove("Password");
             ModelState.Remove("ConfirmPassword");
-            var emailCheck = await myDbContext.Users.AnyAsync(x => x.Email == user.Email && x.Id != user.Id);
-            if (emailCheck)
+            var emailCheck = await myDbContext.Users.Where(x => x.Email == user.Email && x.Id != user.Id).FirstOrDefaultAsync();
+            if (emailCheck != null)
             {
                 TempData["error"] = "Email Already Exists";
                 return View(user);
@@ -1001,6 +1035,35 @@ namespace Clinic_Management.Controllers
                 //return Json(user);
                 myDbContext.Users.Update(user);
                 await myDbContext.SaveChangesAsync();
+                if (HttpContext.Request.Cookies.Keys.Contains("id"))
+                {
+                    var cookieOptions = new CookieOptions
+                    {
+                        Expires = DateTime.Now.AddDays(7),
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Strict
+                    };
+                    Response.Cookies.Append("id", user.Id.ToString(), cookieOptions);
+                    Response.Cookies.Append("name", user.Name, cookieOptions);
+                    Response.Cookies.Append("email", user.Email, cookieOptions);
+                    Response.Cookies.Append("role", user.Role.ToString(), cookieOptions);
+                    Response.Cookies.Append("image", user.Image, cookieOptions);
+                    if (user.Role == 3)
+                    {
+                        Response.Cookies.Append("gender", user.Gender.ToString(), cookieOptions);
+                        Response.Cookies.Append("medicalhistory", user.MedicalHistory, cookieOptions);
+                    }
+                    if (user.Role == 0 || user.Role == 1 || user.Role == 3)
+                    {
+                        Response.Cookies.Append("phone", user.Phone, cookieOptions);
+                        Response.Cookies.Append("address", user.Address, cookieOptions);
+                    }
+                    else
+                    {
+                        Response.Cookies.Append("staff_role", user.Staff_Role.ToString(), cookieOptions);
+                    }
+                }
                 if (HttpContext.Session.GetString("role") == "0" || HttpContext.Session.GetString("role") == "3")
                 {
                     HttpContext.Session.SetString("role", user.Role.ToString());
@@ -1052,6 +1115,7 @@ namespace Clinic_Management.Controllers
 
             return Json(medicines);
         }
+        [ValidateAntiForgeryToken]
         [AuthenticationFilter]
         [HttpPost]
         public async Task<IActionResult> Feedback(int productId, string productType, int? rating, string comment)
@@ -1069,7 +1133,14 @@ namespace Clinic_Management.Controllers
                 }
             }
 
-            await myDbContext.Reviews.AddAsync(new Models.Review { UserId = Convert.ToInt32(HttpContext.Session.GetString("id")), ProductId = productId, ProductType = productType, Rating = (int)rating, Comment = comment });
+            await myDbContext.Reviews.AddAsync(new Models.Review
+            {
+                UserId = Convert.ToInt32(HttpContext.Session.GetString("id")),
+                ProductId = productId,
+                ProductType = productType,
+                Rating = (int)rating,
+                Comment = comment
+            });
             await myDbContext.SaveChangesAsync();
             TempData["success"] = "Your Review Added Successfully";
             if (productType == "Medicine")
@@ -1081,6 +1152,7 @@ namespace Clinic_Management.Controllers
                 return RedirectToAction("MachinesDetail", new { id = productId });
             }
         }
+        [ValidateAntiForgeryToken]
         [AuthenticationFilter]
         [HttpPost]
         public async Task<IActionResult> UpdateReview(int? reviewId, int productId, string productType, string comment)
@@ -1100,7 +1172,7 @@ namespace Clinic_Management.Controllers
                 return RedirectToAction("MachinesDetail", new { id = productId });
             }
         }
-
+        [ValidateAntiForgeryToken]
         [AuthenticationFilter]
         [HttpPost]
         public async Task<IActionResult> DeleteReview(int? reviewId, int productId, string productType)
@@ -1134,13 +1206,35 @@ namespace Clinic_Management.Controllers
             ViewData["CurrentController"] = "Home";
             return View();
         }
-        [AuthenticationFilter]
+        [ValidateAntiForgeryToken]
+        //[AuthenticationFilter]
         [HttpPost]
-        public async Task<IActionResult> Contact(Contact contact)
+        public async Task<IActionResult> Contact(Contact contact, string returnUrlContact)
         {
+            if (HttpContext.Session.GetString("id") == null && HttpContext.Request.Cookies["id"] == null)
+            {
+                if (!string.IsNullOrEmpty(contact.Subject))
+                {
+                    HttpContext.Session.SetString("subject", contact.Subject);
+                }
+                if (!string.IsNullOrEmpty(contact.Message))
+                {
+                    HttpContext.Session.SetString("message", contact.Message);
+                }
+                if (!string.IsNullOrEmpty(returnUrlContact))
+                {
+                    return RedirectToAction("Login", "User", new { returnUrl = returnUrlContact });
+                }
+                else
+                {
+                    return RedirectToAction("Login", "User", null);
+                }
+            }
+            TempData["subject"] = contact.Subject;
             //return Json(ModelState);
             if (ModelState.IsValid)
             {
+                //if(HttpContext.Session.GetString("id"))
                 contact.UserId = Convert.ToInt32(HttpContext.Session.GetString("id"));
 
                 await myDbContext.Contact.AddAsync(contact);
@@ -1152,6 +1246,7 @@ namespace Clinic_Management.Controllers
             }
             return View();
         }
+
         public IActionResult Privacy()
         {
             return View();
@@ -1163,6 +1258,4 @@ namespace Clinic_Management.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
-
-
 }
