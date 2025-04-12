@@ -24,6 +24,16 @@
 
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "10000", // 10 seconds
+            "extendedTimeOut": "1000"
+        };
+
+    </script>
 </head>
 
 <body>
@@ -86,6 +96,14 @@
         }
                             });
     </script>
+    @if (accessor.HttpContext.Request.Cookies["remember_info_shown"] == null)
+    {
+        <script>
+            toastr.info("Check 'Remember me' to stay logged in on this device—no need to sign in again until you log out.");
+
+            document.cookie = "remember_info_shown=true; path=/";
+        </script>
+    }
 </body>
 
 </html>

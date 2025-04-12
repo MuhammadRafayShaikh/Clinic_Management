@@ -345,6 +345,10 @@ namespace Clinic_Management.Controllers
         [AuthenticationFilter]
         public IActionResult Logout()
         {
+            if (Request.Cookies["remember_info_shown"] != null)
+            {
+                Response.Cookies.Delete("remember_info_shown");
+            }
             HttpContext.Session.Clear();
             Response.Cookies.Delete("id");
             Response.Cookies.Delete("name");
