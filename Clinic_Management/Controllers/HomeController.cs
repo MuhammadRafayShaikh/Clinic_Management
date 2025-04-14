@@ -1296,6 +1296,10 @@ namespace Clinic_Management.Controllers
         //    await myDbContext.SaveChangesAsync();
         //    return Content("Account Deleted Successfully");
         //}
+        
+        public IActionResult testing(){
+            return View();
+        }
 
         public IActionResult Privacy()
         {

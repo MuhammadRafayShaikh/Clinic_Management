@@ -5,7 +5,7 @@ This is a complete Clinic Management System built using ASP.NET MVC. It includes
 🔐 Default Login Credentials
 
 Admin Panel
-Email: admin@admin.com  
+Email: admin@gmail.com  
 Password: 12341234
 
 Pharmacist Panel
