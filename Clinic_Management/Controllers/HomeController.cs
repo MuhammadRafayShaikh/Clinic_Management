@@ -1297,10 +1297,6 @@ namespace Clinic_Management.Controllers
         //    return Content("Account Deleted Successfully");
         //}
         
-        public IActionResult testing(){
-            return View();
-        }
-
         public IActionResult Privacy()
         {
             return View();
