@@ -78,6 +78,12 @@ namespace Clinic_Management.Controllers
             //        HttpContext.Session.SetString("staff_role", cookies["staff_role"]);
             //    }
             //}
+            var verifyUser = await myDbContext.VerifiedUsers.Where(x => x.UserId == Convert.ToInt32(HttpContext.Session.GetString("id"))).FirstOrDefaultAsync();
+
+            if (verifyUser != null)
+            {
+                HttpContext.Session.SetString("confirmotp", "done");
+            }
             ViewData["CurrentAction"] = "Index";
             ViewData["CurrentController"] = "Home";
             ViewBag.doctors = await myDbContext.Users.Where(x => x.Staff_Role == StaffRole.Doctor).ToListAsync();
@@ -743,7 +749,7 @@ namespace Clinic_Management.Controllers
 
         }
 
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> Booking(int? seminarId, int? price)
         {
@@ -1098,11 +1104,11 @@ namespace Clinic_Management.Controllers
                         Response.Cookies.Append("staff_role", userData.Staff_Role.ToString(), cookieOptions);
                     }
                 }
-                    HttpContext.Session.SetString("role", userData.Role.ToString());
-                    HttpContext.Session.SetString("name", userData.Name);
-                    HttpContext.Session.SetString("email", userData.Email);
-                    HttpContext.Session.SetString("image", userData.Image);
-                    HttpContext.Session.SetString("password", userData.Password);
+                HttpContext.Session.SetString("role", userData.Role.ToString());
+                HttpContext.Session.SetString("name", userData.Name);
+                HttpContext.Session.SetString("email", userData.Email);
+                HttpContext.Session.SetString("image", userData.Image);
+                HttpContext.Session.SetString("password", userData.Password);
                 if (HttpContext.Session.GetString("role") == "0" || HttpContext.Session.GetString("role") == "3")
                 {
                     HttpContext.Session.SetString("phone", userData.Phone);
@@ -1208,7 +1214,7 @@ namespace Clinic_Management.Controllers
         public async Task<IActionResult> DeleteReview(int? reviewId, int productId, string productType)
         {
             var review = await myDbContext.Reviews.FindAsync(reviewId);
-            if(review == null)
+            if (review == null)
             {
                 return NotFound("Review Not Found");
             }
@@ -1244,16 +1250,18 @@ namespace Clinic_Management.Controllers
         [HttpPost]
         public async Task<IActionResult> Contact(Contact contact, string returnUrlContact)
         {
+            if (!string.IsNullOrEmpty(contact.Subject))
+            {
+                HttpContext.Session.SetString("subject", contact.Subject);
+            }
+            if (!string.IsNullOrEmpty(contact.Message))
+            {
+                HttpContext.Session.SetString("message", contact.Message);
+            }
             if (HttpContext.Session.GetString("id") == null && HttpContext.Request.Cookies["id"] == null)
             {
-                if (!string.IsNullOrEmpty(contact.Subject))
-                {
-                    HttpContext.Session.SetString("subject", contact.Subject);
-                }
-                if (!string.IsNullOrEmpty(contact.Message))
-                {
-                    HttpContext.Session.SetString("message", contact.Message);
-                }
+                TempData["alert"] = "Please Login First";
+
                 if (!string.IsNullOrEmpty(returnUrlContact))
                 {
                     return RedirectToAction("Login", "User", new { returnUrl = returnUrlContact });
@@ -1262,6 +1270,11 @@ namespace Clinic_Management.Controllers
                 {
                     return RedirectToAction("Login", "User", null);
                 }
+            }
+            if (!HttpContext.Session.Keys.Contains("confirmotp"))
+            {
+                TempData["alert"] = "Please verify your email by OTP, we sent it to your email";
+                return RedirectToAction("VerifyOtp", "User");
             }
             //TempData["subject"] = contact.Subject;
             //return Json(ModelState);
@@ -1296,7 +1309,7 @@ namespace Clinic_Management.Controllers
         //    await myDbContext.SaveChangesAsync();
         //    return Content("Account Deleted Successfully");
         //}
-        
+
         public IActionResult Privacy()
         {
             return View();

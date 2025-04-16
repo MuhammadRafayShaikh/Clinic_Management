@@ -49,6 +49,12 @@ namespace Clinic_Management.Models
         [MinLength(10, ErrorMessage = "Medical History must be greater than 10 characters")]
         public string? MedicalHistory { get; set; }
 
+        public _Verified Verified { get; set; } = _Verified.No;
+        public enum _Verified
+        {
+            No,
+            Yes
+        }
 
         public enum StaffRole
         {
@@ -74,5 +80,6 @@ namespace Clinic_Management.Models
         public List<Booking>? Bookings { get; set; }
         public List<Contact>? Contact { get; set; }
         public List<Review>? Reviews { get; set; }
+        public VerifiedUser? VerifiedUser { get; set; }
     }
 }

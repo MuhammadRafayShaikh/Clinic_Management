@@ -120,6 +120,25 @@
                     </div>
                 </div>
                 <a asp-controller="Home" asp-action="Seminars" class="nav-item nav-link @((ViewData["CurrentAction"] as string == "Seminars" && ViewData["CurrentController"] as string == "Home") ? "active" : "")">Seminar</a>
+                @{
+                    if (accessor.HttpContext.Session.GetString("role") == "1" || accessor.HttpContext.Session.Keys.Contains("staff_role"))
+                    {
+                        <a asp-controller="Admin" asp-action="Index" class="nav-item nav-link">Dashboard</a>
+                    }
+
+                    if (accessor.HttpContext.Session.Keys.Contains("staff_role") && !accessor.HttpContext.Session.Keys.Contains("confirmotp"))
+                    {
+                        <a asp-controller="User" asp-action="VerifyOtp" class="nav-item nav-link">Verification Link</a>
+                    }
+                    else if (accessor.HttpContext.Session.GetString("role") == "1" && !accessor.HttpContext.Session.Keys.Contains("confirmotp") && !accessor.HttpContext.Request.Cookies.Keys.Contains("adminRemember"))
+                    {
+                        <a asp-controller="User" asp-action="VerifyOtp" class="nav-item nav-link">Verification Link</a>
+                    }
+                    else if (accessor.HttpContext.Session.GetString("role") == "0" && !accessor.HttpContext.Session.Keys.Contains("confirmotp"))
+                    {
+                        <a asp-controller="User" asp-action="VerifyOtp" class="nav-item nav-link">Verification Link</a>
+                    }
+                }
             </div>
 
 

@@ -533,9 +533,40 @@ namespace Clinic_Management.Migrations
                     b.Property<DateTime>("Updated_at")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Verified")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Clinic_Management.Models.VerifiedUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OTP")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Verified")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("VerifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("VerifiedUsers");
                 });
 
             modelBuilder.Entity("Order", b =>
@@ -831,6 +862,17 @@ namespace Clinic_Management.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Clinic_Management.Models.VerifiedUser", b =>
+                {
+                    b.HasOne("Clinic_Management.Models.User", "User")
+                        .WithOne("VerifiedUser")
+                        .HasForeignKey("Clinic_Management.Models.VerifiedUser", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Order", b =>
                 {
                     b.HasOne("Clinic_Management.Models.User", "User")
@@ -914,6 +956,8 @@ namespace Clinic_Management.Migrations
                     b.Navigation("Reviews");
 
                     b.Navigation("Seminars");
+
+                    b.Navigation("VerifiedUser");
 
                     b.Navigation("doctorTimeSlots");
                 });

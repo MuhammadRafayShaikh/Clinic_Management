@@ -121,7 +121,14 @@
     {
         <text>
 
-                    toastr.warning("Please login first to contact with us");
+                    toastr.warning("Please login first to contact with us!");
+        </text>
+    }
+    @if (accessor.HttpContext.Session.Keys.Contains("id") && !accessor.HttpContext.Session.Keys.Contains("confirmotp"))
+    {
+        <text>
+
+                    toastr.warning("Please verify your email to contact with us!");
         </text>
     }
     @if (TempData["success"] != null)

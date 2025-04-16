@@ -258,6 +258,13 @@
                             toastr.success('@TempData["successLogin"]');
                 </text>
             }
+            @if (TempData["otperror"] != null)
+            {
+                <text>
+                            toastr.warning('@TempData["otperror"]');
+                </text>
+            }
+                    
                     
                                 });
         </script>

@@ -26,6 +26,7 @@ namespace Clinic_Management.Models
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Contact> Contact { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<VerifiedUser> VerifiedUsers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<DoctorTimeSlot>()
@@ -155,6 +156,12 @@ namespace Clinic_Management.Models
                 .HasOne(c => c.User)
                 .WithMany(u => u.Reviews)
                 .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<VerifiedUser>()
+                .HasOne(c => c.User)
+                .WithOne(u => u.VerifiedUser)
+                .HasForeignKey<VerifiedUser>(c => c.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
         }

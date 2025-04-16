@@ -263,6 +263,12 @@
                                         </a>
                                         
                                         <a asp-controller="User" asp-action="Logout" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+                                        @{
+                                            if (accessor.HttpContext.Session.GetString("role") == "1" || accessor.HttpContext.Session.Keys.Contains("staff_role"))
+                                            {
+                                                <a asp-controller="User" asp-action="SuperLogout" title="You will get new OTP for again login if you hit super logout button" class="btn btn-outline-primary mx-3 mt-2 d-block">Super Logout</a>
+                                            }
+                                        }
                                     </div>
                                 </div>
                             </li>
@@ -274,7 +280,7 @@
             @RenderBody()
             <div class="py-6 px-6 text-center">
                 <p class="mb-0 fs-4">
-                    Design and Developed by <a href="https://adminmart.com/" target="_blank" class="pe-1 text-primary text-decoration-underline">AdminMart.com</a> Distributed by <a href="https://themewagon.com">ThemeWagon</a>
+                    Design and Developed by <a href="https://github.com/MuhammadRafayShaikh" target="_blank" class="pe-1 text-primary text-decoration-underline">Unknown 🥺</a> Distributed by <a href="https://github.com/MuhammadRafayShaikh">Unknown 🥺</a>
                 </p>
             </div>
         </div>

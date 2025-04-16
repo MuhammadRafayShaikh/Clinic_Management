@@ -94,6 +94,13 @@
                                     toastr.error('@TempData["alert"]');
             </text>
         }
+        @if (TempData["otperror"] != null)
+        {
+            <text>
+                        toastr.error('@TempData["otperror"]');
+            </text>
+        }
+                
                             });
     </script>
     @if (accessor.HttpContext.Request.Cookies["remember_info_shown"] == null)

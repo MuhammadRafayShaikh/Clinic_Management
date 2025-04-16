@@ -7,6 +7,8 @@ using System.Net.Mail;
 using System.Net;
 using Microsoft.Extensions.Options;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
+using static System.Net.WebRequestMethods;
 
 namespace Clinic_Management.Controllers
 {
@@ -24,6 +26,42 @@ namespace Clinic_Management.Controllers
             this.webHostEnvironment = webHostEnvironment;
             this.myDbContext = myDbContext;
             this.emailSettings = emailSettings.Value;
+        }
+
+        private async Task SendingEmail(string email, string subject, string body)
+        {
+            var smtpClient = new SmtpClient(emailSettings.Host)
+            {
+                Port = emailSettings.Port,
+                Credentials = new NetworkCredential(emailSettings.UserName, emailSettings.Password),
+                EnableSsl = true,
+            };
+
+            var mailMessage = new MailMessage
+            {
+                From = new MailAddress(emailSettings.UserName),
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = false,
+            };
+
+            mailMessage.To.Add(email);
+
+            mailMessage.CC.Add(emailSettings.CCEmail);
+
+            await smtpClient.SendMailAsync(mailMessage);
+        }
+
+        private async Task OTPEmail(int otp)
+        {
+            string body = $"Your OTP Code\", \"Your OTP is: {otp}";
+            string subject = "Email Verification";
+            await this.SendingEmail(HttpContext.Session.GetString("email"), subject, body);
+        }
+        private async Task<bool> VerifiedUser()
+        {
+            var verifyOtp = await myDbContext.VerifiedUsers.AnyAsync(x => x.UserId == Convert.ToInt32(HttpContext.Session.GetString("id")));
+            return verifyOtp;
         }
         public IActionResult Register(string? email = null, string? returnUrl = null)
         {
@@ -63,6 +101,7 @@ namespace Clinic_Management.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(User user, IFormFile? Image, string? remember)
         {
+            //return Json(DateTime.Now.AddMinutes(5).ToString());
             //return Json(remember);
             //return Json(Image);
             //return Json(user);
@@ -143,28 +182,14 @@ namespace Clinic_Management.Controllers
 
                     this.CookiesSet(user, remember);
 
-                    var smtpClient = new SmtpClient(emailSettings.Host)
-                    {
-                        Port = emailSettings.Port,
-                        Credentials = new NetworkCredential(emailSettings.UserName, emailSettings.Password),
-                        EnableSsl = true,
-                    };
+                    var otp = new Random().Next(100000, 999999);
 
-                    var mailMessage = new MailMessage
-                    {
-                        From = new MailAddress(emailSettings.UserName),
-                        Subject = "User Registration",
-                        Body = $"Congratulations! Hi, {HttpContext.Session.GetString("name")}, You have successfully registered",
-                        IsBodyHtml = false,
-                    };
+                    HttpContext.Session.SetString("otp", otp.ToString());
+                    HttpContext.Session.SetString("otpExpiry", DateTime.Now.AddMinutes(5).ToString());
 
-                    mailMessage.To.Add(HttpContext.Session.GetString("email"));
+                    await this.OTPEmail(otp);
 
-                    mailMessage.CC.Add(emailSettings.CCEmail);
-
-                    await smtpClient.SendMailAsync(mailMessage);
-                    TempData["success"] = "Successfully Registered";
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("VerifyOtp");
                 }
                 else
                 {
@@ -273,9 +298,17 @@ namespace Clinic_Management.Controllers
 
                     this.CookiesSet(userData, remember);
 
-                    TempData["successLogin"] = "Successfully Login";
+                    var verifyUser = await myDbContext.VerifiedUsers.Where(x => x.UserId == Convert.ToInt32(HttpContext.Session.GetString("id"))).FirstOrDefaultAsync();
+
+                    if (verifyUser != null)
+                    {
+                        HttpContext.Session.SetString("confirmotp", "done");
+                    }
+
                     if (userData.Role == 0 || userData.Role == 3)
                     {
+                        TempData["successLogin"] = "Successfully Login";
+
                         if (TempData["returnUrl"] == null)
                         {
                             returnUrl = null;
@@ -292,7 +325,23 @@ namespace Clinic_Management.Controllers
                     }
                     else
                     {
-                        return RedirectToAction("Index", "Admin");
+                        if (HttpContext.Request.Cookies["adminRemember"] == null)
+                        {
+                            var otp = new Random().Next(100000, 999999);
+                            HttpContext.Session.SetString("otp", otp.ToString());
+                            HttpContext.Session.SetString("otpExpiry", DateTime.Now.AddMinutes(5).ToString());
+
+                            await this.OTPEmail(otp);
+
+                            return RedirectToAction("VerifyOtp");
+
+                        }
+                        else
+                        {
+                            HttpContext.Session.SetString("confirmotp", "done");
+                            return RedirectToAction("Index", "Admin");
+                        }
+
                     }
                 }
                 else
@@ -309,6 +358,187 @@ namespace Clinic_Management.Controllers
             return View(user);
 
         }
+
+        public async Task<IActionResult> VerifyOtp()
+        {
+            if (!HttpContext.Session.Keys.Contains("id"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (HttpContext.Session.GetString("role") == "0")
+            {
+                if (await this.VerifiedUser())
+                {
+                    TempData["otperror"] = "You are already verified";
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+            if (HttpContext.Request.Cookies["adminRemember"] != null)
+            {
+                TempData["otpinfo"] = "You can access Admin Panel without get OTP for 24 hours, If you would like to get new OTP for login then please do super logout";
+                return RedirectToAction("Index", "Admin");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> VerifyOtp(string otp, string adminRemember)
+        {
+            if (!HttpContext.Session.Keys.Contains("id"))
+            {
+                TempData["otperror"] = "Please Login First to get new OTP";
+                return RedirectToAction("Login");
+            }
+            string sessionOtp = HttpContext.Session.GetString("otp");
+            string expiryTimeStr = HttpContext.Session.GetString("otpExpiry");
+            if (otp == null)
+            {
+                TempData["otperror"] = "Please Enter OTP";
+                return View();
+            }
+            if (otp != HttpContext.Session.GetString("otp"))
+            {
+                TempData["error"] = "OTP is invalid";
+                return View();
+            }
+
+            if (HttpContext.Session.Keys.Contains("id") && HttpContext.Session.GetString("role") == "0")
+            {
+                if (!string.IsNullOrEmpty(sessionOtp) && !string.IsNullOrEmpty(expiryTimeStr))
+                {
+                    DateTime expiry = DateTime.Parse(expiryTimeStr);
+                    if (DateTime.Now <= expiry)
+                    {
+                        if (otp == HttpContext.Session.GetString("otp"))
+                        {
+                            await myDbContext.VerifiedUsers.AddAsync(new VerifiedUser
+                            {
+                                UserId = Convert.ToInt32(HttpContext.Session.GetString("id")),
+                                OTP = Convert.ToInt32(otp),
+                                Verified = Models.VerifiedUser._Verified.Yes
+                            });
+                            var markVerified = await myDbContext.Users.FindAsync(Convert.ToInt32(HttpContext.Session.GetString("id")));
+                            if (markVerified != null)
+                            {
+                                markVerified.Verified = Models.User._Verified.Yes;
+                            }
+                            await myDbContext.SaveChangesAsync();
+                            HttpContext.Session.Remove("otp");
+                            HttpContext.Session.Remove("otpExpiry");
+                            HttpContext.Session.SetString("confirmotp", "done");
+                            TempData["success"] = "Successfully Registered";
+                            string subject = "User Registration";
+                            string body = $"Congratulations! Hi, {HttpContext.Session.GetString("name")}, You have successfully registered";
+                            await this.SendingEmail(HttpContext.Session.GetString("email"), subject, body);
+                            //string returnUrl = TempData["ret"]
+                            if (TempData["returnUrl"] == null)
+                            {
+                                return RedirectToAction("Index", "Home");
+                            }
+                            return Redirect(TempData["returnUrl"].ToString());
+
+                        }
+                    }
+                    else
+                    {
+                        this.ExpireOTP();
+                        return View();
+                    }
+                }
+            }
+            if (
+                (HttpContext.Session.Keys.Contains("id") && HttpContext.Session.GetString("role") == "1") ||
+                (HttpContext.Session.Keys.Contains("id") && HttpContext.Session.Keys.Contains("staff_role"))
+            )
+
+            {
+                if (!string.IsNullOrEmpty(sessionOtp) && !string.IsNullOrEmpty(expiryTimeStr))
+                {
+                    //TempData["error"] = "hello";
+                    DateTime expiryTime = DateTime.Parse(expiryTimeStr);
+
+                    if(DateTime.Now <= expiryTime)
+                    {
+                        if (adminRemember == "yes")
+                        {
+                            var CookieOptions = new CookieOptions
+                            {
+                                Expires = DateTime.Now.AddSeconds(60),
+                                HttpOnly = true,
+                                Secure = true,
+                                SameSite = SameSiteMode.Strict
+                            };
+                            Response.Cookies.Append("adminRemember", adminRemember);
+                        }
+                        if (otp == HttpContext.Session.GetString("otp"))
+                        {
+                            HttpContext.Session.Remove("otp");
+                            HttpContext.Session.Remove("otpExpiry");
+                            HttpContext.Session.SetString("confirmotp", "done");
+                            TempData["successLogin"] = "Login Successfully";
+                            return RedirectToAction("Index", "Admin");
+                        }
+                    }
+                    else
+                    {
+                        this.ExpireOTP();
+                        return View();
+                    }
+                }
+            }
+
+            return View();
+        }
+
+        private void ExpireOTP()
+        {
+            TempData["otperror"] = "OTP has expired. Please request a new one.";
+            HttpContext.Session.Remove("otp");
+            HttpContext.Session.Remove("otpExpiry");
+           
+        }
+        public async Task<IActionResult> ResendOtp()
+        {
+            if (HttpContext.Session.Keys.Contains("id"))
+            {
+                if (await this.VerifiedUser())
+                {
+                    TempData["otperror"] = "You are already verified";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                var lastOtpSentStr = HttpContext.Session.GetString("lastOtpSent");
+                if (lastOtpSentStr != null)
+                {
+                    DateTime lastOtpSent = DateTime.Parse(lastOtpSentStr);
+                    if (DateTime.Now < lastOtpSent.AddMinutes(1))
+                    {
+                        TimeSpan remaining = lastOtpSent.AddMinutes(1) - DateTime.Now;
+                        TempData["otperror"] = $"Please wait {remaining.Seconds} seconds before requesting another OTP.";
+                        //TempData["disable"] = "disabled";
+                        return RedirectToAction("VerifyOtp");
+                    }
+                }
+
+                var otp = new Random().Next(100000, 999999);
+                HttpContext.Session.SetString("otp", otp.ToString());
+                HttpContext.Session.SetString("otpExpiry", DateTime.Now.AddMinutes(5).ToString());
+                HttpContext.Session.SetString("lastOtpSent", DateTime.Now.ToString());
+
+                string subject = "Again Email Verification";
+                string body = $"Your OTP Code, Your new OTP is: {otp}";
+
+                await this.SendingEmail(HttpContext.Session.GetString("email"), subject, body);
+
+                TempData["otpsuccess"] = "OTP sent successfully to email " + HttpContext.Session.GetString("email");
+                return RedirectToAction("VerifyOtp");
+            }
+
+            TempData["otperror"] = "Please Login First to get new OTP";
+            return RedirectToAction("Login");
+        }
+
+
         private void CookiesSet(User userData, string? remember)
         {
             if (remember == "true")
@@ -342,37 +572,51 @@ namespace Clinic_Management.Controllers
             }
         }
 
-        [AuthenticationFilter]
+        //[AuthenticationFilter]
         public IActionResult Logout()
         {
-            if (Request.Cookies["remember_info_shown"] != null)
+            if (HttpContext.Session.Keys.Contains("id"))
             {
-                Response.Cookies.Delete("remember_info_shown");
-            }
-            HttpContext.Session.Clear();
-            Response.Cookies.Delete("id");
-            Response.Cookies.Delete("name");
-            Response.Cookies.Delete("email");
-            Response.Cookies.Delete("role");
-            Response.Cookies.Delete("image");
+                if (Request.Cookies["remember_info_shown"] != null)
+                {
+                    Response.Cookies.Delete("remember_info_shown");
+                }
+                HttpContext.Session.Clear();
+                Response.Cookies.Delete("id");
+                Response.Cookies.Delete("name");
+                Response.Cookies.Delete("email");
+                Response.Cookies.Delete("role");
+                Response.Cookies.Delete("image");
 
-            if (Request.Cookies["role"] == "3")
+                if (Request.Cookies["role"] == "3")
+                {
+                    Response.Cookies.Delete("gender");
+                    Response.Cookies.Delete("medicalhistory");
+                }
+
+                if (Request.Cookies["role"] == "0" || Request.Cookies["role"] == "1" || Request.Cookies["role"] == "3")
+                {
+                    Response.Cookies.Delete("phone");
+                    Response.Cookies.Delete("address");
+                }
+
+                else
+                {
+                    Response.Cookies.Delete("staff_role");
+                }
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult SuperLogout()
+        {
+            this.Logout();
+
+            if (HttpContext.Request.Cookies["adminRemember"] != null)
             {
-                Response.Cookies.Delete("gender");
-                Response.Cookies.Delete("medicalhistory");
+                Response.Cookies.Delete("adminRemember");
             }
-
-            if (Request.Cookies["role"] == "0" || Request.Cookies["role"] == "1" || Request.Cookies["role"] == "3")
-            {
-                Response.Cookies.Delete("phone");
-                Response.Cookies.Delete("address");
-            }
-
-            else
-            {
-                Response.Cookies.Delete("staff_role");
-            }
-
             return RedirectToAction("Index", "Home");
         }
     }

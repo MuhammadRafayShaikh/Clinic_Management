@@ -279,5 +279,11 @@
                                                                                 });
             </text>
         }
+        @if (TempData["otpinfo"] != null)
+        {
+            <text>
+                        toastr.info('@TempData["otpinfo"]');
+            </text>
+        }
         })
     </script>
