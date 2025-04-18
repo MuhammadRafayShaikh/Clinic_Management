@@ -1046,6 +1046,14 @@ namespace Clinic_Management.Controllers
             TempData["otpinfo"] = "You are not change your password yet";
             return RedirectToAction("Index", "Home");
         }
+        
+        public async Task<IActionResult> SkipandContinue(int? id)
+        {
+            var user = await myDbContext.Users.FindAsync(id);
+            this.CookiesSet(user, "true");
+            TempData["success"] = "Successfully Login";
+            return RedirectToAction("Index","Home");
+        }
         //[AuthenticationFilter]
         public IActionResult Logout()
         {
