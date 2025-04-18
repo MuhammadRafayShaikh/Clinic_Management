@@ -9,6 +9,10 @@ using Microsoft.Extensions.Options;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using static System.Net.WebRequestMethods;
+using Stripe;
+using Twilio;
+using Twilio.Rest.Api.V2010.Account;
+using Twilio.Types;
 
 namespace Clinic_Management.Controllers
 {
@@ -17,15 +21,18 @@ namespace Clinic_Management.Controllers
         private readonly myDbContext myDbContext;
         private readonly IWebHostEnvironment webHostEnvironment;
         private readonly EmailSettings emailSettings;
+        private readonly TwilioSettings twilioSettings;
         public UserController(
             myDbContext myDbContext,
             IWebHostEnvironment webHostEnvironment,
-            IOptions<EmailSettings> emailSettings
+            IOptions<EmailSettings> emailSettings,
+            IOptions<TwilioSettings> twilioSettings
             )
         {
             this.webHostEnvironment = webHostEnvironment;
             this.myDbContext = myDbContext;
             this.emailSettings = emailSettings.Value;
+            this.twilioSettings = twilioSettings.Value;
         }
 
         private async Task SendingEmail(string email, string subject, string body)
@@ -189,6 +196,7 @@ namespace Clinic_Management.Controllers
 
                     await this.OTPEmail(otp);
 
+                    TempData["otpsuccess"] = $"We sent OTP to {HttpContext.Session.GetString("email")}! Please enter OTP to continue";
                     return RedirectToAction("VerifyOtp");
                 }
                 else
@@ -375,7 +383,7 @@ namespace Clinic_Management.Controllers
             }
             if (HttpContext.Request.Cookies["adminRemember"] != null)
             {
-                TempData["otpinfo"] = "You can access Admin Panel without get OTP for 24 hours, If you would like to get new OTP for login then please do super logout";
+                TempData["otpinfo"] = "You can access Admin Panel without get OTP for 24 hours, If you would like to get new OTP for login then please hit super logout button";
                 return RedirectToAction("Index", "Admin");
             }
             return View();
@@ -423,10 +431,14 @@ namespace Clinic_Management.Controllers
                                 markVerified.Verified = Models.User._Verified.Yes;
                             }
                             await myDbContext.SaveChangesAsync();
+
                             HttpContext.Session.Remove("otp");
                             HttpContext.Session.Remove("otpExpiry");
+
                             HttpContext.Session.SetString("confirmotp", "done");
+
                             TempData["success"] = "Successfully Registered";
+
                             string subject = "User Registration";
                             string body = $"Congratulations! Hi, {HttpContext.Session.GetString("name")}, You have successfully registered";
                             await this.SendingEmail(HttpContext.Session.GetString("email"), subject, body);
@@ -436,7 +448,6 @@ namespace Clinic_Management.Controllers
                                 return RedirectToAction("Index", "Home");
                             }
                             return Redirect(TempData["returnUrl"].ToString());
-
                         }
                     }
                     else
@@ -457,7 +468,7 @@ namespace Clinic_Management.Controllers
                     //TempData["error"] = "hello";
                     DateTime expiryTime = DateTime.Parse(expiryTimeStr);
 
-                    if(DateTime.Now <= expiryTime)
+                    if (DateTime.Now <= expiryTime)
                     {
                         if (adminRemember == "yes")
                         {
@@ -495,10 +506,15 @@ namespace Clinic_Management.Controllers
             TempData["otperror"] = "OTP has expired. Please request a new one.";
             HttpContext.Session.Remove("otp");
             HttpContext.Session.Remove("otpExpiry");
-           
+
         }
         public async Task<IActionResult> ResendOtp()
         {
+            if (HttpContext.Session.GetString("otpprocess") == "true")
+            {
+                TempData["otperror"] = "OTP is already being sent. Please wait...";
+                return RedirectToAction("VerifyOtp");
+            }
             if (HttpContext.Session.Keys.Contains("id"))
             {
                 if (await this.VerifiedUser())
@@ -519,19 +535,26 @@ namespace Clinic_Management.Controllers
                         return RedirectToAction("VerifyOtp");
                     }
                 }
+                HttpContext.Session.SetString("otpprocess", true.ToString());
+                try
+                {
+                    var otp = new Random().Next(100000, 999999);
+                    HttpContext.Session.SetString("otp", otp.ToString());
+                    HttpContext.Session.SetString("otpExpiry", DateTime.Now.AddMinutes(5).ToString());
+                    HttpContext.Session.SetString("lastOtpSent", DateTime.Now.ToString());
 
-                var otp = new Random().Next(100000, 999999);
-                HttpContext.Session.SetString("otp", otp.ToString());
-                HttpContext.Session.SetString("otpExpiry", DateTime.Now.AddMinutes(5).ToString());
-                HttpContext.Session.SetString("lastOtpSent", DateTime.Now.ToString());
+                    string subject = "Again Email Verification";
+                    string body = $"Your OTP Code, Your new OTP is: {otp}";
 
-                string subject = "Again Email Verification";
-                string body = $"Your OTP Code, Your new OTP is: {otp}";
+                    await this.SendingEmail(HttpContext.Session.GetString("email"), subject, body);
 
-                await this.SendingEmail(HttpContext.Session.GetString("email"), subject, body);
-
-                TempData["otpsuccess"] = "OTP sent successfully to email " + HttpContext.Session.GetString("email");
-                return RedirectToAction("VerifyOtp");
+                    TempData["otpsuccess"] = "OTP sent successfully to email " + HttpContext.Session.GetString("email");
+                    return RedirectToAction("VerifyOtp");
+                }
+                finally
+                {
+                    HttpContext.Session.Remove("otpprocess");
+                }
             }
 
             TempData["otperror"] = "Please Login First to get new OTP";
@@ -572,6 +595,457 @@ namespace Clinic_Management.Controllers
             }
         }
 
+        public IActionResult ForgotPassword()
+        {
+            if (!HttpContext.Session.Keys.Contains("id"))
+            {
+                return View();
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult SearchAccount()
+        {
+            User user = new User();
+            //return Json("kiya hal hyn");
+            return View(user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SearchAccount(string? mobile, string? email)
+        {
+            //return Json("helo");
+            if (mobile != null)
+            {
+                var user = await myDbContext.Users.Where(x => x.Phone == mobile).FirstOrDefaultAsync();
+
+                return View(user);
+
+            }
+            else if (email != null)
+            {
+                var user = await myDbContext.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
+
+                return View(user);
+
+            }
+            TempData["error"] = "Please search by at least one field";
+            return RedirectToAction("ForgotPassword");
+            //return RedirectToAction("");
+        }
+
+        public async Task<IActionResult> ResetPasswordOptions(int? id)
+        {
+            if (HttpContext.Session.Keys.Contains("id"))
+            {
+                return RedirectToAction("ChangePassword", new { id = id });
+            }
+            if (id == null)
+            {
+                return NotFound("Id is missing");
+            }
+            var user = await myDbContext.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound("User Not Found");
+            }
+            TempData["otpinfo"] = "You can get only one OTP via Phone Number, so please be careful";
+            return View(user);
+        }
+        public async Task<IActionResult> EnterCode(int? id)
+        {
+            if (HttpContext.Session.Keys.Contains("id"))
+            {
+                TempData["otpsuccess"] = "You are verified successfully";
+                return RedirectToAction("ChangePassword", new { id = id });
+            }
+            var user = await myDbContext.Users.FindAsync(id);
+            return View(user);
+        }
+        [HttpPost]
+        public async Task<IActionResult> SendCode(int? userId, string method)
+        {
+            if (userId == null)
+            {
+                return NotFound("Id is missing");
+            }
+            var user = await myDbContext.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User Not Found");
+            }
+            if (method == "password")
+            {
+                return RedirectToAction("EnterPasswordLogin", new { id = userId });
+            }
+            if (method == "email")
+            {
+                var otp = new Random().Next(100000, 999999);
+
+                HttpContext.Session.SetString("otp", otp.ToString());
+                HttpContext.Session.SetString("otpExpiry", DateTime.Now.AddMinutes(5).ToString());
+
+                string body = $"Your OTP Code\", \"Your OTP is: {otp}";
+                string subject = "Password Reset";
+
+                await this.SendingEmail(user.Email, subject, body);
+
+                HttpContext.Session.SetString("codeByEmail", true.ToString());
+
+                TempData["otpsuccess"] = $"Hi {user.Name}, We sent OTP to {user.Email}! Please enter OTP to login your account";
+                return RedirectToAction("EnterCode", new { id = userId });
+            }
+            else if (method == "phone")
+            {
+                if (HttpContext.Session.GetString("codeByPhone") == null)
+                {
+                    TwilioClient.Init(twilioSettings.AccountSid, twilioSettings.AuthToken);
+
+                    var otp = new Random().Next(100000, 999999);
+
+                    HttpContext.Session.SetString("otp", otp.ToString());
+                    HttpContext.Session.SetString("otpExpiry", DateTime.Now.AddMinutes(5).ToString());
+
+                    var message = MessageResource.Create(
+                        to: new Twilio.Types.PhoneNumber(this.ConvertToE164Format(localNumber: user.Phone)),
+                        from: new PhoneNumber(twilioSettings.FromPhoneNumber),
+                        body: $"Your OTP code is: {otp}"
+                        );
+
+                    //string body = $"Your OTP Code\", \"Your OTP is: {otp}";
+                    //string subject = "Password Reset";
+                    HttpContext.Session.SetString("codeByPhone", true.ToString());
+                    HttpContext.Session.SetString("codeByPhoneDone", true.ToString());
+
+                    //await this.SendingEmail(user.Email, subject, body);
+
+                    HttpContext.Session.SetString("messageSid", message.Sid);
+                    TempData["otpsuccess"] = $"Hi {user.Name}, We sent OTP to {user.Phone}! Please enter OTP to login your account, Message SID: {message.Sid}";
+                    return RedirectToAction("EnterCode", new { id = userId });
+                }
+                else
+                {
+                    TempData["otperror"] = "You got one OTP via Phone Number, Please request another OTP via Email";
+                    return RedirectToAction("EnterCode", new { id = userId });
+                }
+            }
+            TempData["error"] = "Something went wrong";
+            return RedirectToAction("ResetPasswordOptions");
+        }
+
+        public string ConvertToE164Format(string localNumber)
+        {
+            localNumber = localNumber.Replace(" ", "").Replace("-", "");
+
+            if (localNumber.StartsWith("0") && localNumber.Length == 11)
+            {
+                return "+92" + localNumber.Substring(1);
+            }
+
+            if (localNumber.StartsWith("+92") && localNumber.Length == 13)
+            {
+                return localNumber;
+            }
+
+            throw new ArgumentException("Invalid Pakistani phone number format.");
+        }
+
+
+        public async Task<IActionResult> PasswordResetVerifyOTP(string otp, int? userId)
+        {
+            var user = await myDbContext.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User Not Found");
+            }
+            if (otp == null)
+            {
+                TempData["otperror"] = "Please Enter OTP";
+                //return View("SendCode",user);
+                return RedirectToAction("EnterCode", new { id = userId });
+            }
+            string sessionotp = HttpContext.Session.GetString("otp");
+            string otpExpiryStr = HttpContext.Session.GetString("otpExpiry");
+
+            if (!string.IsNullOrEmpty(sessionotp) && !string.IsNullOrEmpty(otpExpiryStr))
+            {
+                DateTime otpExpiry = DateTime.Parse(otpExpiryStr);
+
+                if (DateTime.Now <= otpExpiry)
+                {
+                    if (otp == sessionotp)
+                    {
+                        await myDbContext.VerifiedUsers.
+                            AddAsync(new VerifiedUser
+                            {
+                                UserId = Convert.ToInt32(userId),
+                                OTP = Convert.ToInt32(otp),
+                                Verified = Models.VerifiedUser._Verified.Yes,
+                                PasswordReset = Models.VerifiedUser._PasswordReset.Yes,
+                                MessageSid = HttpContext.Session.GetString("messageSid")
+                            });
+                        await myDbContext.SaveChangesAsync();
+
+                        HttpContext.Session.Remove("codeByPhoneDone");
+                        HttpContext.Session.Remove("codeByEmail");
+                        HttpContext.Session.Remove("otp");
+                        HttpContext.Session.Remove("otpExpiry");
+                        HttpContext.Session.SetString("confirmotp", "done");
+                        HttpContext.Session.SetString("id", user.Id.ToString());
+                        HttpContext.Session.SetString("name", user.Name);
+                        HttpContext.Session.SetString("email", user.Email);
+                        HttpContext.Session.SetString("role", user.Role.ToString());
+                        HttpContext.Session.SetString("image", user.Image);
+                        HttpContext.Session.SetString("password", user.Password);
+                        if (user.Role == 3)
+                        {
+                            HttpContext.Session.SetString("gender", user.Gender.ToString());
+                            HttpContext.Session.SetString("medicalhistory", user.MedicalHistory);
+                        }
+                        if (user.Role == 0 || user.Role == 1 || user.Role == 3)
+                        {
+                            HttpContext.Session.SetString("phone", user.Phone);
+                            HttpContext.Session.SetString("address", user.Address);
+                        }
+                        else
+                        {
+                            HttpContext.Session.SetString("staff_role", user.Staff_Role.ToString());
+                        }
+                        TempData["otpsuccess"] = "Verified Successfully";
+                        return RedirectToAction("ChangePassword", new { id = userId });
+                    }
+                    else
+                    {
+                        TempData["otperror"] = "OTP is invalid";
+                        return RedirectToAction("EnterCode", new { id = userId });
+                    }
+                }
+                else
+                {
+                    this.ExpireOTP();
+                    return RedirectToAction("EnterCode", new { id = userId });
+                }
+            }
+            else
+            {
+                TempData["otperror"] = "Please request new OTP";
+                return RedirectToAction("EnterCode", new { id = userId });
+            }
+
+        }
+
+        public async Task<IActionResult> ChangePassword(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound("Id is missing");
+            }
+            if (id != Convert.ToInt32(HttpContext.Session.GetString("id")))
+            {
+                return NotFound("Aage bhaag rhe ho na");
+            }
+            var user = await myDbContext.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound("User Not Found");
+            }
+            return View(user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(int? userId, string password)
+        {
+
+            //return Json(password);
+            if (userId == null)
+            {
+                return NotFound("Id is missing");
+                //TempData["error"] = "Id is missing";
+                //return View();
+            }
+            var user = await myDbContext.Users.FindAsync(userId);
+            if (userId != Convert.ToInt32(HttpContext.Session.GetString("id")))
+            {
+                TempData["error"] = "User Not Match with the specified info";
+                return View(user);
+            }
+            if (user == null)
+            {
+                TempData["error"] = "User Not Found";
+                return View(user);
+            }
+            if (password == null)
+            {
+                TempData["error"] = "Please Enter Password";
+                return View(user);
+            }
+            if (password.Length < 6)
+            {
+                TempData["error"] = "Password length must be greater than 6";
+                return View(user);
+            }
+
+            PasswordHasher<User> hash = new PasswordHasher<User>();
+            user.Password = hash.HashPassword(user, password);
+
+            myDbContext.Users.Update(user);
+            await myDbContext.SaveChangesAsync();
+
+            TempData["otpsuccess"] = "Your Password Changed Successfully and Login successfully";
+
+            string subject = "Password Changed";
+            string body = $"Hi {HttpContext.Session.GetString("name")}!, Your password updated successfully on {DateTime.Now.ToString()}";
+            await this.SendingEmail(HttpContext.Session.GetString("email"), subject, body);
+
+            if (TempData["returnUrl"] != null)
+            {
+                return Redirect(TempData["returnUrl"].ToString());
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        public async Task<IActionResult> PasswordResetResendOtp(int? userId)
+        {
+            if (HttpContext.Session.GetString("otpprocess") == "true")
+            {
+                TempData["otperror"] = "OTP is already being sent. Please wait...";
+                return RedirectToAction("VerifyOtp");
+            }
+            if (userId != null)
+            {
+                var user = await myDbContext.Users.FindAsync(userId);
+                if (user == null)
+                {
+                    return NotFound("User Not Found");
+                }
+
+                var lastOtpSentStr = HttpContext.Session.GetString("lastOtpSent");
+                if (lastOtpSentStr != null)
+                {
+                    DateTime lastOtpSent = DateTime.Parse(lastOtpSentStr);
+                    if (DateTime.Now < lastOtpSent.AddMinutes(1))
+                    {
+                        TimeSpan remaining = lastOtpSent.AddMinutes(1) - DateTime.Now;
+                        TempData["otperror"] = $"Please wait {remaining.Seconds} seconds before requesting another OTP.";
+                        //TempData["disable"] = "disabled";
+                        return RedirectToAction("EnterCode", new { id = userId });
+                    }
+                }
+                HttpContext.Session.SetString("otpprocess", true.ToString());
+                try
+                {
+                    var otp = new Random().Next(100000, 999999);
+                    HttpContext.Session.SetString("otp", otp.ToString());
+                    HttpContext.Session.SetString("otpExpiry", DateTime.Now.AddMinutes(5).ToString());
+                    HttpContext.Session.SetString("lastOtpSent", DateTime.Now.ToString());
+
+                    string subject = "Password Reset";
+                    string body = $"Your OTP Code, Your new OTP for password reset is: {otp}";
+
+                    await this.SendingEmail(user.Email, subject, body);
+
+                    TempData["otpsuccess"] = $"OTP sent successfully to email {user.Email} for password reset";
+                    return RedirectToAction("EnterCode", new { id = userId });
+                }
+                finally
+                {
+                    HttpContext.Session.Remove("otpprocess");
+                }
+            }
+            return NotFound("Id is missing");
+        }
+
+        public async Task<IActionResult> EnterPasswordLogin(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound("Id is missing");
+            }
+            var user = await myDbContext.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound("User Not Found");
+            }
+            return View(user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EnterPasswordLogin(int? Id, string Email, string Password, string? Remember)
+        {
+            if (Id == null)
+            {
+                return NotFound("Id is missing");
+            }
+            var user = await myDbContext.Users.FindAsync(Id);
+            if (!ModelState.IsValid)
+            {
+                return View(user);
+            }
+            var userData = await myDbContext.Users.Where(x => x.Email == Email).FirstOrDefaultAsync();
+
+            if (user != null)
+            {
+                var hash = new PasswordHasher<User>();
+
+                PasswordVerificationResult result = hash.VerifyHashedPassword(userData, userData.Password, Password);
+
+                if (result == PasswordVerificationResult.Success)
+                {
+                    HttpContext.Session.SetString("id", userData.Id.ToString());
+                    HttpContext.Session.SetString("name", userData.Name);
+                    HttpContext.Session.SetString("email", userData.Email);
+                    HttpContext.Session.SetString("role", userData.Role.ToString());
+                    HttpContext.Session.SetString("image", userData.Image);
+                    HttpContext.Session.SetString("password", userData.Password);
+                    if (userData.Role == 3)
+                    {
+                        HttpContext.Session.SetString("gender", userData.Gender.ToString());
+                        HttpContext.Session.SetString("medicalhistory", userData.MedicalHistory);
+                    }
+                    if (userData.Role == 0 || userData.Role == 1 || userData.Role == 3)
+                    {
+                        HttpContext.Session.SetString("phone", userData.Phone);
+                        HttpContext.Session.SetString("address", userData.Address);
+                    }
+                    else
+                    {
+                        HttpContext.Session.SetString("staff_role", userData.Staff_Role.ToString());
+                    }
+
+                    this.CookiesSet(userData, Remember);
+                    var verifyUser = await myDbContext.VerifiedUsers.Where(x => x.UserId == Convert.ToInt32(HttpContext.Session.GetString("id"))).FirstOrDefaultAsync();
+                    if (verifyUser != null)
+                    {
+                        HttpContext.Session.SetString("confirmotp", "done");
+                    }
+
+                    if (userData.Role == 0 || userData.Role == 3)
+                    {
+                        TempData["successLogin"] = "Successfully Login";
+
+                        if (!string.IsNullOrEmpty(TempData["returnUrl"].ToString()) && Url.IsLocalUrl(TempData["returnUrl"].ToString()))
+                        {
+                            return Redirect(TempData["returnUrl"].ToString());
+                        }
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+            }
+            else
+            {
+                TempData["error"] = "Email is incorrect";
+                return View(user);
+            }
+            return View(user);
+        }
+        public async Task<IActionResult> Skip()
+        {
+            string subject = "Account Login";
+            string message = $"Your account login with OTP on {DateTime.Now.ToString()}";
+            await this.SendingEmail(HttpContext.Session.GetString("email"), subject, message);
+            TempData["otpinfo"] = "You are not change your password yet";
+            return RedirectToAction("Index", "Home");
+        }
         //[AuthenticationFilter]
         public IActionResult Logout()
         {

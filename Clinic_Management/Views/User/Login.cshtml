@@ -16,6 +16,8 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+
+
     <!-- Toastr CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
@@ -34,6 +36,12 @@
         };
 
     </script>
+    <style>
+        .createbtn {
+            background-color: white !important;
+            border-color: #5D87FF !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -59,11 +67,15 @@
                                         <label asp-for="Password" class="form-label">Password</label>
                                         <input asp-for="Password" class="form-control">
                                         <label class="mt-2">Remember Me</label>
-                                        <input type="checkbox" value="true" name="remember"/>
+                                        <input type="checkbox" value="true" name="remember" />
                                     </div>
                                     <input type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" value="Sign In" />
                                     <div class="d-flex align-items-center justify-content-center">
-                                        <a class="text-primary fw-bold ms-2" asp-controller="User" asp-action="Register">Create an account</a>
+                                        <a class="text-dark fw-bold ms-2" asp-controller="User" asp-action="ForgotPassword">Forgot Password?</a>
+                                    </div>
+
+                                    <div class="d-flex align-items-center justify-content-center mt-5">
+                                        <a class="btn btn-primary text-primary fw-bold ms-2 createbtn w-100 py-8 fs-4 rounded-2" asp-controller="User" asp-action="Register">Create an account</a>
                                     </div>
                                 </form>
                             </div>
@@ -85,13 +97,13 @@
                         text: '@TempData["error"]',
                         icon: 'error',
                         confirmButtonText: 'Okay'
-                                                    });
+                                                                });
             </text>
         }
         @if (TempData["alert"] != null)
         {
             <text>
-                                    toastr.error('@TempData["alert"]');
+                        toastr.error('@TempData["alert"]');
             </text>
         }
         @if (TempData["otperror"] != null)
@@ -100,8 +112,8 @@
                         toastr.error('@TempData["otperror"]');
             </text>
         }
-                
-                            });
+
+                                    });
     </script>
     @if (accessor.HttpContext.Request.Cookies["remember_info_shown"] == null)
     {

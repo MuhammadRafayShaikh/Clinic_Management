@@ -8,8 +8,8 @@
                     <div class="p-3" style="max-width: 900px;">
                         <h5 class="text-white text-uppercase mb-3 animated slideInDown">Keep Your Teeth Healthy</h5>
                         <h1 class="display-1 text-white mb-md-4 animated zoomIn">Take The Best Quality Dental Treatment</h1>
-                        <a href="appointment.html" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Appointment</a>
-                        <a href="" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Contact Us</a>
+                        <a asp-controller="Home" asp-action="Medicines" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Medicines</a>
+                        <a asp-controller="Home" asp-action="Contact" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Contact Us</a>
                     </div>
                 </div>
             </div>
@@ -19,8 +19,8 @@
                     <div class="p-3" style="max-width: 900px;">
                         <h5 class="text-white text-uppercase mb-3 animated slideInDown">Keep Your Teeth Healthy</h5>
                         <h1 class="display-1 text-white mb-md-4 animated zoomIn">Take The Best Quality Dental Treatment</h1>
-                        <a href="appointment.html" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Appointment</a>
-                        <a href="" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Contact Us</a>
+                        <a asp-controller="Home" asp-action="Medicines" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Medicines</a>
+                        <a asp-controller="Home" asp-action="Contact" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Contact Us</a>
                     </div>
                 </div>
             </div>
@@ -63,7 +63,7 @@
             <div class="col-lg-4 wow zoomIn" data-wow-delay="0.3s">
                 <div class="bg-dark d-flex flex-column p-5" style="height: 300px;">
                     <h3 class="text-white mb-3">Search A Doctor</h3>
-                    
+
                     <select id="doctorSelect" class="form-select bg-light border-0 mb-3" style="height: 40px;">
                         <option selected disabled>Select A Doctor</option>
                         @foreach (var doctors in ViewBag.doctors)
@@ -134,7 +134,8 @@
                     <h1 class="display-5 mb-0">We Offer The Best Quality Medical Instrument Services</h1>
                 </div>
                 <div class="row g-5">
-                    @foreach(var machine in ViewBag.machines){
+                    @foreach (var machine in ViewBag.machines)
+                    {
                         <div class="col-md-6 service-item wow zoomIn" data-wow-delay="0.6s">
                             <div class="rounded-top overflow-hidden">
                                 <a asp-controller="Home" asp-action="MachinesDetail" asp-route-id="@machine.Id"><img class="img-fluid" src="~/MachinesImages/@machine.Image" alt=""></a>
@@ -144,14 +145,15 @@
                             </div>
                         </div>
                     }
-                    
+
                 </div>
             </div>
         </div>
         <div class="row g-5 wow fadeInUp" data-wow-delay="0.1s">
             <div class="col-lg-7">
                 <div class="row g-5">
-                    @foreach(var machine2 in ViewBag.machines2){
+                    @foreach (var machine2 in ViewBag.machines2)
+                    {
 
                         <div class="col-md-6 service-item wow zoomIn" data-wow-delay="0.3s">
                             <div class="rounded-top overflow-hidden">
@@ -173,8 +175,6 @@
             </div>
         </div>
         </dibanner.webp    <!-- Service End -->
-        
-        
         <!-- Testimonial Start -->
         <div class="container-fluid bg-primary bg-testimonial py-5 my-5 wow fadeInUp" data-wow-delay="0.1s">
             <div class="container py-5">
@@ -207,7 +207,8 @@
                             <h1 class="display-6 mb-4">Meet Our Certified & Experienced Doctors</h1>
                         </div>
                     </div>
-                    @foreach(var doctordetail in ViewBag.doctordetails){
+                    @foreach (var doctordetail in ViewBag.doctordetails)
+                    {
                         <div class="col-lg-4 wow slideInUp" data-wow-delay="0.3s">
                             <div class="team-item">
                                 <div class="position-relative rounded-top" style="z-index: 1;">
@@ -221,7 +222,7 @@
                             </div>
                         </div>
                     }
-                    
+
                 </div>
             </div>
         </div>
@@ -237,18 +238,18 @@
                 }
             }
 
-            $(document).ready(function(){
+            $(document).ready(function () {
                 $("#")
             })
         </script>
 
         <script>
             $(document).ready(function () {
-            
+
             @if (TempData["alert"] != null)
             {
                 <text>
-                                            toastr.error('@TempData["alert"]');
+                            toastr.error('@TempData["alert"]');
                 </text>
             }
 
@@ -264,33 +265,46 @@
                             toastr.warning('@TempData["otperror"]');
                 </text>
             }
-                    
-                    
-                                });
+
+
+                                            });
         </script>
         <script>
             $(document).ready(function () {
             @if (TempData["error"] != null)
             {
                 <text>
-                                    Swal.fire({
-                                        title: 'Error!',
-                                    text: '@TempData["error"]',
-                                    icon: 'error',
-                                    confirmButtonText: 'Okay'
-                                                                });
+                            Swal.fire({
+                                title: 'Error!',
+                            text: '@TempData["error"]',
+                            icon: 'error',
+                            confirmButtonText: 'Okay'
+                                                                                });
                 </text>
             }
             @if (TempData["success"] != null)
             {
                 <text>
-                                            Swal.fire({
-                                                title: 'Success!',
-                                            text: '@TempData["success"]',
-                                            icon: 'success',
-                                            confirmButtonText: 'Okay'
-                                                                        });
+                            Swal.fire({
+                                title: 'Success!',
+                            text: '@TempData["success"]',
+                            icon: 'success',
+                            confirmButtonText: 'Okay'
+                                                                                        });
                 </text>
             }
-            })
+            @if (TempData["otpinfo"] != null)
+            {
+                <text>
+                            toastr.info('@TempData["otpinfo"]');
+                </text>
+            }
+            @if (TempData["otpsuccess"] != null)
+            {
+                <text>
+                            toastr.success('@TempData["otpsuccess"]');
+                </text>
+            }
+                    
+                        })
         </script>

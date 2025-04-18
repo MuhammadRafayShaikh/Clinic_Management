@@ -395,8 +395,8 @@
                     }
                     else
                     {
-
-                        <p class="text-center">You need to login to leave a comment <a asp-controller="User" asp-action="Login"><b>Click Here to Login</b></a></p>
+                        @using System.Text
+                        <p class="text-center">You need to login to leave a comment <a asp-controller="User" asp-action="Login" asp-route-returnUrl="@Convert.ToBase64String(Encoding.UTF8.GetBytes(Context.Request.Path))"><b>Click Here to Login</b></a></p>
                     }
                 }
 

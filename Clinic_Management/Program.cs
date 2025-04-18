@@ -9,6 +9,8 @@ builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Str
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
+builder.Services.Configure<TwilioSettings>(builder.Configuration.GetSection("Twilio"));
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 

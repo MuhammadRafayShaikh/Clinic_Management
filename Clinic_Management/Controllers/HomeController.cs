@@ -422,7 +422,7 @@ namespace Clinic_Management.Controllers
             //return 1;
         }
 
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         [AuthenticationFilter]
         [HttpPost]
         public async Task<IActionResult> PlaceOrder()
@@ -996,13 +996,16 @@ namespace Clinic_Management.Controllers
                 TempData["error"] = "Email Already Exists";
                 return View(user);
             }
-            if (string.IsNullOrEmpty(user.Phone))
+            if (!HttpContext.Session.Keys.Contains("staff_role"))
             {
-                ModelState.AddModelError("Phone", "Phone is required");
-            }
-            if (string.IsNullOrEmpty(user.Address))
-            {
-                ModelState.AddModelError("Address", "Address is required");
+                if (string.IsNullOrEmpty(user.Phone))
+                {
+                    ModelState.AddModelError("Phone", "Phone is required");
+                }
+                if (string.IsNullOrEmpty(user.Address))
+                {
+                    ModelState.AddModelError("Address", "Address is required");
+                }
             }
             if (HttpContext.Session.GetString("role") == "3")
             {
@@ -1131,6 +1134,7 @@ namespace Clinic_Management.Controllers
                 }
                 return RedirectToAction("Index");
             }
+            //return Json(ModelState);
             return View(user);
         }
 

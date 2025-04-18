@@ -160,8 +160,8 @@ namespace Clinic_Management.Models
 
             modelBuilder.Entity<VerifiedUser>()
                 .HasOne(c => c.User)
-                .WithOne(u => u.VerifiedUser)
-                .HasForeignKey<VerifiedUser>(c => c.UserId)
+                .WithMany(u => u.VerifiedUser)
+                .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
         }

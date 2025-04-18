@@ -80,6 +80,6 @@ namespace Clinic_Management.Models
         public List<Booking>? Bookings { get; set; }
         public List<Contact>? Contact { get; set; }
         public List<Review>? Reviews { get; set; }
-        public VerifiedUser? VerifiedUser { get; set; }
+        public List<VerifiedUser>? VerifiedUser { get; set; }
     }
 }

@@ -549,8 +549,17 @@ namespace Clinic_Management.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("MessageSid")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("OTP")
                         .HasColumnType("int");
+
+                    b.Property<int>("PasswordReset")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -563,8 +572,7 @@ namespace Clinic_Management.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("VerifiedUsers");
                 });
@@ -865,8 +873,8 @@ namespace Clinic_Management.Migrations
             modelBuilder.Entity("Clinic_Management.Models.VerifiedUser", b =>
                 {
                     b.HasOne("Clinic_Management.Models.User", "User")
-                        .WithOne("VerifiedUser")
-                        .HasForeignKey("Clinic_Management.Models.VerifiedUser", "UserId")
+                        .WithMany("VerifiedUser")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

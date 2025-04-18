@@ -856,7 +856,7 @@ namespace Clinic_Management.Controllers
 
                 }
             }
-            TempData["error"] = "Nothing Changes Apply";
+            TempData["nochange"] = "Nothing Changes Apply";
             return RedirectToAction("ViewOrder", new { id = orderId });
 
         }

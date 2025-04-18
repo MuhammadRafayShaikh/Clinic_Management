@@ -127,5 +127,12 @@
                                                         });
         </text>
     }
+    @if (TempData["nochange"] != null)
+    {
+        <text>
+                    toastr.warning('@TempData["nochange"]');
+        </text>
+    }
+          
     })
 </script>
