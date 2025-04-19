@@ -88,7 +88,7 @@
                             <input type="email" @onlyready value="@userEmail" class="form-control border-0 bg-light px-4" placeholder="Your Email" style="height: 55px;">
                         </div>
                         <div class="col-12">
-                            <input type="text" value="@accessor.HttpContext.Session.GetString("subject")" id="subject" asp-for="Subject" class="form-control border-0 bg-light px-4" placeholder="Subject" style="height: 55px;">
+                            <input type="text" value="@accessor.HttpContext.Request.Cookies["subject"]" id="subject" asp-for="Subject" class="form-control border-0 bg-light px-4" placeholder="Subject" style="height: 55px;">
                             <span asp-validation-for="Subject" class="text-danger"></span>
                         </div>
                         <div class="col-12">
@@ -115,7 +115,7 @@
 <script>
     $(document).ready(function () {
 
-        $("#Message").val('@accessor.HttpContext.Session.GetString("message")');
+        $("#Message").val('@accessor.HttpContext.Request.Cookies["message"]');
 
     @if (!accessor.HttpContext.Session.Keys.Contains("id") && !accessor.HttpContext.Request.Cookies.Keys.Contains("id"))
     {

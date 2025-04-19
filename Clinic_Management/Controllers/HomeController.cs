@@ -1256,11 +1256,11 @@ namespace Clinic_Management.Controllers
         {
             if (!string.IsNullOrEmpty(contact.Subject))
             {
-                HttpContext.Session.SetString("subject", contact.Subject);
+                Response.Cookies.Append("subject", contact.Subject);
             }
             if (!string.IsNullOrEmpty(contact.Message))
             {
-                HttpContext.Session.SetString("message", contact.Message);
+                Response.Cookies.Append("message", contact.Message);
             }
             if (HttpContext.Session.GetString("id") == null && HttpContext.Request.Cookies["id"] == null)
             {
@@ -1289,6 +1289,9 @@ namespace Clinic_Management.Controllers
 
                 await myDbContext.Contact.AddAsync(contact);
                 await myDbContext.SaveChangesAsync();
+
+                Response.Cookies.Delete("subject");
+                Response.Cookies.Delete("message");
 
                 TempData["success"] = "Form submitted successfully, We will contact you ASAP";
                 return RedirectToAction("Index");
