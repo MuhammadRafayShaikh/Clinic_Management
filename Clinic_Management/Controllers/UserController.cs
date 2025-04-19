@@ -101,6 +101,7 @@ namespace Clinic_Management.Controllers
                 ViewBag.email = email;
                 return View();
             }
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -109,9 +110,6 @@ namespace Clinic_Management.Controllers
         public async Task<IActionResult> Register(User user, IFormFile? Image, string? remember)
         {
             //return Json(DateTime.Now.AddMinutes(5).ToString());
-            //return Json(remember);
-            //return Json(Image);
-            //return Json(user);
             if (string.IsNullOrEmpty(user.Phone))
             {
                 ModelState.AddModelError("Phone", "Phone is required");
@@ -169,9 +167,12 @@ namespace Clinic_Management.Controllers
                     {
                         user.Role = 3;
                     }
+
                     await myDbContext.Users.AddAsync(user);
                     await myDbContext.SaveChangesAsync();
+
                     var user_id = await myDbContext.Users.Where(x => x.Email == user.Email).FirstOrDefaultAsync();
+
                     HttpContext.Session.SetString("id", user_id.Id.ToString());
                     HttpContext.Session.SetString("name", user.Name);
                     HttpContext.Session.SetString("email", user.Email);
@@ -261,6 +262,7 @@ namespace Clinic_Management.Controllers
             {
                 return View();
             }
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -283,26 +285,7 @@ namespace Clinic_Management.Controllers
 
                 if (result == PasswordVerificationResult.Success)
                 {
-                    HttpContext.Session.SetString("id", userData.Id.ToString());
-                    HttpContext.Session.SetString("name", userData.Name);
-                    HttpContext.Session.SetString("email", userData.Email);
-                    HttpContext.Session.SetString("role", userData.Role.ToString());
-                    HttpContext.Session.SetString("image", userData.Image);
-                    HttpContext.Session.SetString("password", userData.Password);
-                    if (userData.Role == 3)
-                    {
-                        HttpContext.Session.SetString("gender", userData.Gender.ToString());
-                        HttpContext.Session.SetString("medicalhistory", userData.MedicalHistory);
-                    }
-                    if (userData.Role == 0 || userData.Role == 1 || userData.Role == 3)
-                    {
-                        HttpContext.Session.SetString("phone", userData.Phone);
-                        HttpContext.Session.SetString("address", userData.Address);
-                    }
-                    else
-                    {
-                        HttpContext.Session.SetString("staff_role", userData.Staff_Role.ToString());
-                    }
+                    this.SessionsSet(userData);
 
                     this.CookiesSet(userData, remember);
 
@@ -342,14 +325,12 @@ namespace Clinic_Management.Controllers
                             await this.OTPEmail(otp);
 
                             return RedirectToAction("VerifyOtp");
-
                         }
                         else
                         {
                             HttpContext.Session.SetString("confirmotp", "done");
                             return RedirectToAction("Index", "Admin");
                         }
-
                     }
                 }
                 else
@@ -364,7 +345,6 @@ namespace Clinic_Management.Controllers
                 return View(user);
             }
             return View(user);
-
         }
 
         public async Task<IActionResult> VerifyOtp()
@@ -373,6 +353,7 @@ namespace Clinic_Management.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+
             if (HttpContext.Session.GetString("role") == "0")
             {
                 if (await this.VerifiedUser())
@@ -381,11 +362,13 @@ namespace Clinic_Management.Controllers
                     return RedirectToAction("Index", "Home");
                 }
             }
+
             if (HttpContext.Request.Cookies["adminRemember"] != null)
             {
                 TempData["otpinfo"] = "You can access Admin Panel without get OTP for 24 hours, If you would like to get new OTP for login then please hit super logout button";
                 return RedirectToAction("Index", "Admin");
             }
+
             return View();
         }
 
@@ -397,6 +380,7 @@ namespace Clinic_Management.Controllers
                 TempData["otperror"] = "Please Login First to get new OTP";
                 return RedirectToAction("Login");
             }
+
             string sessionOtp = HttpContext.Session.GetString("otp");
             string expiryTimeStr = HttpContext.Session.GetString("otpExpiry");
             if (otp == null)
@@ -404,6 +388,7 @@ namespace Clinic_Management.Controllers
                 TempData["otperror"] = "Please Enter OTP";
                 return View();
             }
+
             if (otp != HttpContext.Session.GetString("otp"))
             {
                 TempData["error"] = "OTP is invalid";
@@ -461,7 +446,6 @@ namespace Clinic_Management.Controllers
                 (HttpContext.Session.Keys.Contains("id") && HttpContext.Session.GetString("role") == "1") ||
                 (HttpContext.Session.Keys.Contains("id") && HttpContext.Session.Keys.Contains("staff_role"))
             )
-
             {
                 if (!string.IsNullOrEmpty(sessionOtp) && !string.IsNullOrEmpty(expiryTimeStr))
                 {
@@ -497,7 +481,6 @@ namespace Clinic_Management.Controllers
                     }
                 }
             }
-
             return View();
         }
 
@@ -506,8 +489,8 @@ namespace Clinic_Management.Controllers
             TempData["otperror"] = "OTP has expired. Please request a new one.";
             HttpContext.Session.Remove("otp");
             HttpContext.Session.Remove("otpExpiry");
-
         }
+
         public async Task<IActionResult> ResendOtp()
         {
             if (HttpContext.Session.GetString("otpprocess") == "true")
@@ -535,10 +518,12 @@ namespace Clinic_Management.Controllers
                         return RedirectToAction("VerifyOtp");
                     }
                 }
+
                 HttpContext.Session.SetString("otpprocess", true.ToString());
                 try
                 {
                     var otp = new Random().Next(100000, 999999);
+
                     HttpContext.Session.SetString("otp", otp.ToString());
                     HttpContext.Session.SetString("otpExpiry", DateTime.Now.AddMinutes(5).ToString());
                     HttpContext.Session.SetString("lastOtpSent", DateTime.Now.ToString());
@@ -561,77 +546,54 @@ namespace Clinic_Management.Controllers
             return RedirectToAction("Login");
         }
 
-
-        private void CookiesSet(User userData, string? remember)
-        {
-            if (remember == "true")
-            {
-                var cookieOptions = new CookieOptions
-                {
-                    Expires = DateTime.Now.AddDays(7),
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict
-                };
-                Response.Cookies.Append("id", userData.Id.ToString(), cookieOptions);
-                Response.Cookies.Append("name", userData.Name, cookieOptions);
-                Response.Cookies.Append("email", userData.Email, cookieOptions);
-                Response.Cookies.Append("role", userData.Role.ToString(), cookieOptions);
-                Response.Cookies.Append("image", userData.Image, cookieOptions);
-                if (userData.Role == 3)
-                {
-                    Response.Cookies.Append("gender", userData.Gender.ToString(), cookieOptions);
-                    Response.Cookies.Append("medicalhistory", userData.MedicalHistory, cookieOptions);
-                }
-                if (userData.Role == 0 || userData.Role == 1 || userData.Role == 3)
-                {
-                    Response.Cookies.Append("phone", userData.Phone, cookieOptions);
-                    Response.Cookies.Append("address", userData.Address, cookieOptions);
-                }
-                else
-                {
-                    Response.Cookies.Append("staff_role", userData.Staff_Role.ToString(), cookieOptions);
-                }
-            }
-        }
-
         public IActionResult ForgotPassword()
         {
             if (!HttpContext.Session.Keys.Contains("id"))
             {
                 return View();
             }
+
             return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult SearchAccount()
+        public async Task<IActionResult> GetAccount(int? id)
         {
-            User user = new User();
-            //return Json("kiya hal hyn");
+            if (id == null)
+            {
+                return NotFound("Id is missing");
+            }
+
+            var user = await myDbContext.Users.FindAsync(id);
             return View(user);
         }
 
         [HttpPost]
         public async Task<IActionResult> SearchAccount(string? mobile, string? email)
         {
-            //return Json("helo");
             if (mobile != null)
             {
                 var user = await myDbContext.Users.Where(x => x.Phone == mobile).FirstOrDefaultAsync();
 
-                return View(user);
+                if (user == null)
+                {
+                    return RedirectToAction("GetAccount", new { id = 0 });
+                }
 
+                return RedirectToAction("GetAccount", new { id = user.Id });
             }
             else if (email != null)
             {
                 var user = await myDbContext.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
 
-                return View(user);
+                if (user == null)
+                {
+                    return RedirectToAction("GetAccount", new { id = 0 });
+                }
 
+                return RedirectToAction("GetAccount", new { id = user.Id });
             }
             TempData["error"] = "Please search by at least one field";
             return RedirectToAction("ForgotPassword");
-            //return RedirectToAction("");
         }
 
         public async Task<IActionResult> ResetPasswordOptions(int? id)
@@ -640,16 +602,26 @@ namespace Clinic_Management.Controllers
             {
                 return RedirectToAction("ChangePassword", new { id = id });
             }
+
             if (id == null)
             {
                 return NotFound("Id is missing");
             }
+
             var user = await myDbContext.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound("User Not Found");
             }
-            TempData["otpinfo"] = "You can get only one OTP via Phone Number, so please be careful";
+
+            var otpRequest = await myDbContext.OtpLogs.Where(x => x.PhoneNumber == user.Phone && x.RequestedAt.Date == DateTime.Today).CountAsync();
+            if (otpRequest >= 2)
+            {
+                TempData["otperror"] = "Your Daily OTP via Phone Number limit reached. Please request OTP Via Email";
+                return View(user);
+            }
+
+            TempData["otpinfo"] = "You can get only 2 OTP per day via Phone Number, so please be careful";
             return View(user);
         }
         public async Task<IActionResult> EnterCode(int? id)
@@ -659,25 +631,33 @@ namespace Clinic_Management.Controllers
                 TempData["otpsuccess"] = "You are verified successfully";
                 return RedirectToAction("ChangePassword", new { id = id });
             }
+
             var user = await myDbContext.Users.FindAsync(id);
             return View(user);
         }
+
         [HttpPost]
         public async Task<IActionResult> SendCode(int? userId, string method)
         {
+            //DateTime dateTime = new DateTime();
+            //return Json(DateTime.Today);
+            //return Json(DateTime.Now.Date);
             if (userId == null)
             {
                 return NotFound("Id is missing");
             }
+
             var user = await myDbContext.Users.FindAsync(userId);
             if (user == null)
             {
                 return NotFound("User Not Found");
             }
+
             if (method == "password")
             {
                 return RedirectToAction("EnterPasswordLogin", new { id = userId });
             }
+
             if (method == "email")
             {
                 var otp = new Random().Next(100000, 999999);
@@ -697,37 +677,46 @@ namespace Clinic_Management.Controllers
             }
             else if (method == "phone")
             {
-                if (HttpContext.Session.GetString("codeByPhone") == null)
+                var otpRequest = await myDbContext.OtpLogs
+                    .Where(x => x.PhoneNumber == user.Phone && x.RequestedAt.Date == DateTime.Today)
+                    .CountAsync();
+
+                if (otpRequest >= 2)
                 {
-                    TwilioClient.Init(twilioSettings.AccountSid, twilioSettings.AuthToken);
-
-                    var otp = new Random().Next(100000, 999999);
-
-                    HttpContext.Session.SetString("otp", otp.ToString());
-                    HttpContext.Session.SetString("otpExpiry", DateTime.Now.AddMinutes(5).ToString());
-
-                    var message = MessageResource.Create(
-                        to: new Twilio.Types.PhoneNumber(this.ConvertToE164Format(localNumber: user.Phone)),
-                        from: new PhoneNumber(twilioSettings.FromPhoneNumber),
-                        body: $"Your OTP code is: {otp}"
-                        );
-
-                    //string body = $"Your OTP Code\", \"Your OTP is: {otp}";
-                    //string subject = "Password Reset";
-                    HttpContext.Session.SetString("codeByPhone", true.ToString());
-                    HttpContext.Session.SetString("codeByPhoneDone", true.ToString());
-
-                    //await this.SendingEmail(user.Email, subject, body);
-
-                    HttpContext.Session.SetString("messageSid", message.Sid);
-                    TempData["otpsuccess"] = $"Hi {user.Name}, We sent OTP to {user.Phone}! Please enter OTP to login your account, Message SID: {message.Sid}";
+                    TempData["otperror"] = "Daily OTP limit reached. Try again tomorrow. Please request another OTP via Email";
                     return RedirectToAction("EnterCode", new { id = userId });
                 }
-                else
+
+                TwilioClient.Init(twilioSettings.AccountSid, twilioSettings.AuthToken);
+
+                var otp = new Random().Next(100000, 999999);
+
+                HttpContext.Session.SetString("otp", otp.ToString());
+                HttpContext.Session.SetString("otpExpiry", DateTime.Now.AddMinutes(5).ToString());
+
+                var message = MessageResource.Create(
+                    to: new Twilio.Types.PhoneNumber(this.ConvertToE164Format(localNumber: user.Phone)),
+                    from: new PhoneNumber(twilioSettings.FromPhoneNumber),
+                    body: $"Your OTP code is: {otp}"
+                    );
+
+                OtpLog otpLog = new OtpLog
                 {
-                    TempData["otperror"] = "You got one OTP via Phone Number, Please request another OTP via Email";
-                    return RedirectToAction("EnterCode", new { id = userId });
-                }
+                    UserId = user.Id,
+                    PhoneNumber = user.Phone,
+                    Otp = otp,
+                    MessageSid = message.Sid,
+                };
+
+                await myDbContext.OtpLogs.AddAsync(otpLog);
+                await myDbContext.SaveChangesAsync();
+
+                HttpContext.Session.SetString("codeByPhone", true.ToString());
+                HttpContext.Session.SetString("codeByPhoneDone", true.ToString());
+                HttpContext.Session.SetString("messageSid", message.Sid);
+
+                TempData["otpsuccess"] = $"Hi {user.Name}, We sent OTP to {user.Phone}! Please enter OTP to login your account, Message SID: {message.Sid}";
+                return RedirectToAction("EnterCode", new { id = userId });
             }
             TempData["error"] = "Something went wrong";
             return RedirectToAction("ResetPasswordOptions");
@@ -749,7 +738,6 @@ namespace Clinic_Management.Controllers
 
             throw new ArgumentException("Invalid Pakistani phone number format.");
         }
-
 
         public async Task<IActionResult> PasswordResetVerifyOTP(string otp, int? userId)
         {
@@ -791,26 +779,9 @@ namespace Clinic_Management.Controllers
                         HttpContext.Session.Remove("otp");
                         HttpContext.Session.Remove("otpExpiry");
                         HttpContext.Session.SetString("confirmotp", "done");
-                        HttpContext.Session.SetString("id", user.Id.ToString());
-                        HttpContext.Session.SetString("name", user.Name);
-                        HttpContext.Session.SetString("email", user.Email);
-                        HttpContext.Session.SetString("role", user.Role.ToString());
-                        HttpContext.Session.SetString("image", user.Image);
-                        HttpContext.Session.SetString("password", user.Password);
-                        if (user.Role == 3)
-                        {
-                            HttpContext.Session.SetString("gender", user.Gender.ToString());
-                            HttpContext.Session.SetString("medicalhistory", user.MedicalHistory);
-                        }
-                        if (user.Role == 0 || user.Role == 1 || user.Role == 3)
-                        {
-                            HttpContext.Session.SetString("phone", user.Phone);
-                            HttpContext.Session.SetString("address", user.Address);
-                        }
-                        else
-                        {
-                            HttpContext.Session.SetString("staff_role", user.Staff_Role.ToString());
-                        }
+
+                        this.SessionsSet(user);
+
                         TempData["otpsuccess"] = "Verified Successfully";
                         return RedirectToAction("ChangePassword", new { id = userId });
                     }
@@ -831,77 +802,6 @@ namespace Clinic_Management.Controllers
                 TempData["otperror"] = "Please request new OTP";
                 return RedirectToAction("EnterCode", new { id = userId });
             }
-
-        }
-
-        public async Task<IActionResult> ChangePassword(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound("Id is missing");
-            }
-            if (id != Convert.ToInt32(HttpContext.Session.GetString("id")))
-            {
-                return NotFound("Aage bhaag rhe ho na");
-            }
-            var user = await myDbContext.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound("User Not Found");
-            }
-            return View(user);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> ChangePassword(int? userId, string password)
-        {
-
-            //return Json(password);
-            if (userId == null)
-            {
-                return NotFound("Id is missing");
-                //TempData["error"] = "Id is missing";
-                //return View();
-            }
-            var user = await myDbContext.Users.FindAsync(userId);
-            if (userId != Convert.ToInt32(HttpContext.Session.GetString("id")))
-            {
-                TempData["error"] = "User Not Match with the specified info";
-                return View(user);
-            }
-            if (user == null)
-            {
-                TempData["error"] = "User Not Found";
-                return View(user);
-            }
-            if (password == null)
-            {
-                TempData["error"] = "Please Enter Password";
-                return View(user);
-            }
-            if (password.Length < 6)
-            {
-                TempData["error"] = "Password length must be greater than 6";
-                return View(user);
-            }
-
-            PasswordHasher<User> hash = new PasswordHasher<User>();
-            user.Password = hash.HashPassword(user, password);
-
-            myDbContext.Users.Update(user);
-            await myDbContext.SaveChangesAsync();
-
-            TempData["otpsuccess"] = "Your Password Changed Successfully and Login successfully";
-
-            string subject = "Password Changed";
-            string body = $"Hi {HttpContext.Session.GetString("name")}!, Your password updated successfully on {DateTime.Now.ToString()}";
-            await this.SendingEmail(HttpContext.Session.GetString("email"), subject, body);
-
-            if (TempData["returnUrl"] != null)
-            {
-                return Redirect(TempData["returnUrl"].ToString());
-            }
-            return RedirectToAction("Index", "Home");
         }
 
         public async Task<IActionResult> PasswordResetResendOtp(int? userId)
@@ -909,7 +809,7 @@ namespace Clinic_Management.Controllers
             if (HttpContext.Session.GetString("otpprocess") == "true")
             {
                 TempData["otperror"] = "OTP is already being sent. Please wait...";
-                return RedirectToAction("VerifyOtp");
+                return RedirectToAction("EnterCode", new { id = userId });
             }
             if (userId != null)
             {
@@ -961,11 +861,13 @@ namespace Clinic_Management.Controllers
             {
                 return NotFound("Id is missing");
             }
+
             var user = await myDbContext.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound("User Not Found");
             }
+
             return View(user);
         }
 
@@ -991,28 +893,10 @@ namespace Clinic_Management.Controllers
 
                 if (result == PasswordVerificationResult.Success)
                 {
-                    HttpContext.Session.SetString("id", userData.Id.ToString());
-                    HttpContext.Session.SetString("name", userData.Name);
-                    HttpContext.Session.SetString("email", userData.Email);
-                    HttpContext.Session.SetString("role", userData.Role.ToString());
-                    HttpContext.Session.SetString("image", userData.Image);
-                    HttpContext.Session.SetString("password", userData.Password);
-                    if (userData.Role == 3)
-                    {
-                        HttpContext.Session.SetString("gender", userData.Gender.ToString());
-                        HttpContext.Session.SetString("medicalhistory", userData.MedicalHistory);
-                    }
-                    if (userData.Role == 0 || userData.Role == 1 || userData.Role == 3)
-                    {
-                        HttpContext.Session.SetString("phone", userData.Phone);
-                        HttpContext.Session.SetString("address", userData.Address);
-                    }
-                    else
-                    {
-                        HttpContext.Session.SetString("staff_role", userData.Staff_Role.ToString());
-                    }
+                    this.SessionsSet(userData);
 
                     this.CookiesSet(userData, Remember);
+
                     var verifyUser = await myDbContext.VerifiedUsers.Where(x => x.UserId == Convert.ToInt32(HttpContext.Session.GetString("id"))).FirstOrDefaultAsync();
                     if (verifyUser != null)
                     {
@@ -1030,14 +914,92 @@ namespace Clinic_Management.Controllers
                         return RedirectToAction("Index", "Home");
                     }
                 }
+                else
+                {
+                    TempData["error"] = "Password is incorrect";
+                    return View(user);
+                }
             }
             else
             {
                 TempData["error"] = "Email is incorrect";
                 return View(user);
             }
+
             return View(user);
         }
+
+        public async Task<IActionResult> ChangePassword(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound("Id is missing");
+            }
+
+            if (id != Convert.ToInt32(HttpContext.Session.GetString("id")))
+            {
+                return NotFound("Aage bhaag rhe ho na");
+            }
+
+            var user = await myDbContext.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound("User Not Found");
+            }
+
+            return View(user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(int? userId, string password)
+        {
+            if (userId == null)
+            {
+                return NotFound("Id is missing");
+            }
+
+            var user = await myDbContext.Users.FindAsync(userId);
+            if (userId != Convert.ToInt32(HttpContext.Session.GetString("id")))
+            {
+                TempData["error"] = "User Not Match with the specified info";
+                return View(user);
+            }
+            if (user == null)
+            {
+                TempData["error"] = "User Not Found";
+                return View(user);
+            }
+            if (password == null)
+            {
+                TempData["error"] = "Please Enter Password";
+                return View(user);
+            }
+            if (password.Length < 6)
+            {
+                TempData["error"] = "Password length must be greater than 6";
+                return View(user);
+            }
+
+            PasswordHasher<User> hash = new PasswordHasher<User>();
+            user.Password = hash.HashPassword(user, password);
+
+            myDbContext.Users.Update(user);
+            await myDbContext.SaveChangesAsync();
+
+            TempData["otpsuccess"] = "Your Password Changed Successfully and Login successfully";
+
+            string subject = "Password Changed";
+            string body = $"Hi {HttpContext.Session.GetString("name")}!, Your password updated successfully on {DateTime.Now.ToString()}";
+            await this.SendingEmail(HttpContext.Session.GetString("email"), subject, body);
+
+            if (TempData["returnUrl"] != null)
+            {
+                return Redirect(TempData["returnUrl"].ToString());
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
         public async Task<IActionResult> Skip()
         {
             string subject = "Account Login";
@@ -1046,14 +1008,72 @@ namespace Clinic_Management.Controllers
             TempData["otpinfo"] = "You are not change your password yet";
             return RedirectToAction("Index", "Home");
         }
-        
+
         public async Task<IActionResult> SkipandContinue(int? id)
         {
             var user = await myDbContext.Users.FindAsync(id);
             this.CookiesSet(user, "true");
             TempData["success"] = "Successfully Login";
-            return RedirectToAction("Index","Home");
+            return RedirectToAction("Index", "Home");
         }
+
+        public void SessionsSet(User user)
+        {
+            HttpContext.Session.SetString("id", user.Id.ToString());
+            HttpContext.Session.SetString("name", user.Name);
+            HttpContext.Session.SetString("email", user.Email);
+            HttpContext.Session.SetString("role", user.Role.ToString());
+            HttpContext.Session.SetString("image", user.Image);
+            HttpContext.Session.SetString("password", user.Password);
+            if (user.Role == 3)
+            {
+                HttpContext.Session.SetString("gender", user.Gender.ToString());
+                HttpContext.Session.SetString("medicalhistory", user.MedicalHistory);
+            }
+            if (user.Role == 0 || user.Role == 1 || user.Role == 3)
+            {
+                HttpContext.Session.SetString("phone", user.Phone);
+                HttpContext.Session.SetString("address", user.Address);
+            }
+            else
+            {
+                HttpContext.Session.SetString("staff_role", user.Staff_Role.ToString());
+            }
+        }
+
+        private void CookiesSet(User userData, string? remember)
+        {
+            if (remember == "true")
+            {
+                var cookieOptions = new CookieOptions
+                {
+                    Expires = DateTime.Now.AddDays(7),
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict
+                };
+                Response.Cookies.Append("id", userData.Id.ToString(), cookieOptions);
+                Response.Cookies.Append("name", userData.Name, cookieOptions);
+                Response.Cookies.Append("email", userData.Email, cookieOptions);
+                Response.Cookies.Append("role", userData.Role.ToString(), cookieOptions);
+                Response.Cookies.Append("image", userData.Image, cookieOptions);
+                if (userData.Role == 3)
+                {
+                    Response.Cookies.Append("gender", userData.Gender.ToString(), cookieOptions);
+                    Response.Cookies.Append("medicalhistory", userData.MedicalHistory, cookieOptions);
+                }
+                if (userData.Role == 0 || userData.Role == 1 || userData.Role == 3)
+                {
+                    Response.Cookies.Append("phone", userData.Phone, cookieOptions);
+                    Response.Cookies.Append("address", userData.Address, cookieOptions);
+                }
+                else
+                {
+                    Response.Cookies.Append("staff_role", userData.Staff_Role.ToString(), cookieOptions);
+                }
+            }
+        }
+
         //[AuthenticationFilter]
         public IActionResult Logout()
         {
@@ -1099,6 +1119,7 @@ namespace Clinic_Management.Controllers
             {
                 Response.Cookies.Delete("adminRemember");
             }
+
             return RedirectToAction("Index", "Home");
         }
     }

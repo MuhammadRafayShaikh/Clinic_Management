@@ -99,7 +99,9 @@
                 </form>
 
                 <div class="text-center mt-3">
-                    <a class="text-decoration-none" asp-controller="User" asp-action="PasswordResetResendOtp" asp-route-userId="@Model.Id" style="color: #5D87FF;">Didn't get a code?</a>
+                    <a asp-controller="User" asp-action="PasswordResetResendOtp" asp-route-userId="@Model.Id" class="btn btn-link text-decoration-none" id="resendBtn">
+                        Didn’t receive the code? <strong>Resend OTP</strong>
+                    </a>
                 </div>
             </div>
         }
@@ -109,6 +111,20 @@
         }
     }
     <script>
+        $(document).ready(function () {
+            $("#resendBtn").on('click', function (e) {
+                e.preventDefault();
+
+                $(this).addClass("disabled");
+                $(this).text("Sending...");
+
+                window.location.href = $(this).attr("href");
+            });
+        });
+
+    </script>
+    <script>
+
         $(document).ready(function () {
         @if (TempData["otperror"] != null)
         {

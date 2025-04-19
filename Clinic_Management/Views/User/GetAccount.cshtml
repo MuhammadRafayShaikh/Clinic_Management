@@ -83,35 +83,43 @@
         <h5 class="text-center mb-4">Choose your account</h5>
 
         <!-- Simulated Account Card -->
-        <div class="account-card" onclick="window.location.href='@Url.Action("ResetPasswordOptions", "User", new { id = Model.Id })'">
-            <div class="account-info">
-                @if (Model != null)
-                {
-                    <img src="~/UserImages/@Model.Image" alt="Profile" />
-                }
-                else
-                {
-                    <img src="~/UserImages/user.png" alt="Profile" />
-                }
-                <div>
-                    @{
-                        if (Model != null)
+        @if (Model != null)
+        {
+            <div class="account-card" onclick="window.location.href='@Url.Action("ResetPasswordOptions", "User", new { id = Model.Id })'">
+                <div class="account-info">
+                    @if (Model != null)
+                    {
+                        <img src="~/UserImages/@Model.Image" alt="Profile" />
+                    }
+
+                    <div>
+                        @if (Model != null)
                         {
                             <p class="account-name">@Model.Name</p>
                             <p class="account-detail">@Model.Email</p>
                         }
-                        else
-                        {
-                            <p class="account-name">No Record Found</p>
-                        }
-                    }
-
+                    </div>
+                </div>
+                <div class="arrow-icon">
+                    <i class="fas fa-chevron-right"></i>
                 </div>
             </div>
-            <div class="arrow-icon">
-                <i class="fas fa-chevron-right"></i>
+        }
+        else
+        {
+            <div class="account-card">
+                <div class="account-info">
+                    <img src="~/UserImages/user.png" alt="Profile" />
+                    <div>
+                        <h2 class="account-name">No Record Found</h2>
+                        <a asp-controller="User" asp-action="ForgotPassword">Go Back</a>
+                    </div>
+                </div>
+                <div class="arrow-icon">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
             </div>
-        </div>
+        }
 
 
 

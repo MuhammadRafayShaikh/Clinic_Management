@@ -130,7 +130,10 @@
                     {
                         <a asp-controller="User" asp-action="VerifyOtp" class="nav-item nav-link">Verification Link</a>
                     }
-                    else if (accessor.HttpContext.Session.GetString("role") == "1" && !accessor.HttpContext.Session.Keys.Contains("confirmotp") && !accessor.HttpContext.Request.Cookies.Keys.Contains("adminRemember"))
+                    else if (
+                        accessor.HttpContext.Session.GetString("role") == "1" &&
+                        !accessor.HttpContext.Session.Keys.Contains("confirmotp") &&
+                        !accessor.HttpContext.Request.Cookies.Keys.Contains("adminRemember"))
                     {
                         <a asp-controller="User" asp-action="VerifyOtp" class="nav-item nav-link">Verification Link</a>
                     }
