@@ -590,6 +590,14 @@ namespace Clinic_Management.Controllers
                     return RedirectToAction("GetAccount", new { id = 0 });
                 }
 
+                if (user.Image.StartsWith("http"))
+                {
+                    //string referer = Request.Headers["Referer"];
+                    //string url = string.IsNullOrEmpty(referer) ? "/" : referer;
+                    TempData["autherror"] = "You signed up using Google. Please use Google to log in!";
+                    return Redirect("Login");
+                }
+
                 return RedirectToAction("GetAccount", new { id = user.Id });
             }
             TempData["error"] = "Please search by at least one field";
@@ -722,8 +730,13 @@ namespace Clinic_Management.Controllers
             return RedirectToAction("ResetPasswordOptions");
         }
 
-        public string ConvertToE164Format(string localNumber)
+        private string ConvertToE164Format(string localNumber)
         {
+            if (localNumber == null)
+            {
+                return "No Number Found";
+            }
+
             localNumber = localNumber.Replace(" ", "").Replace("-", "");
 
             if (localNumber.StartsWith("0") && localNumber.Length == 11)

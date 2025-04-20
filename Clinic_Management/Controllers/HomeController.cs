@@ -976,6 +976,14 @@ namespace Clinic_Management.Controllers
 
         public IActionResult UpdateProfile()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                string referer = Request.Headers["Referer"];
+                string url = string.IsNullOrEmpty(referer) ? "/" : referer;
+                TempData["autherror"] = "You are logged in by Google Account";
+                return Redirect(url);
+            }
+
             return View();
         }
 
@@ -1245,6 +1253,9 @@ namespace Clinic_Management.Controllers
         }
         public IActionResult Contact()
         {
+            //string previousUrl = Request.Headers["Referer"].ToString();
+            //TempData["previousUrl"] = previousUrl;
+            //return Json(previousUrl);
             ViewData["CurrentAction"] = "Contact";
             ViewData["CurrentController"] = "Home";
             return View();
@@ -1254,6 +1265,7 @@ namespace Clinic_Management.Controllers
         [HttpPost]
         public async Task<IActionResult> Contact(Contact contact, string returnUrlContact)
         {
+
             if (!string.IsNullOrEmpty(contact.Subject))
             {
                 Response.Cookies.Append("subject", contact.Subject);
@@ -1294,6 +1306,11 @@ namespace Clinic_Management.Controllers
                 Response.Cookies.Delete("message");
 
                 TempData["success"] = "Form submitted successfully, We will contact you ASAP";
+                //if (TempData["previousUrl"] != null)
+                //{
+                //    return Redirect(TempData["previousUrl"].ToString());
+
+                //}
                 return RedirectToAction("Index");
                 //return Json(contact);
             }

@@ -77,6 +77,11 @@
                                     <div class="d-flex align-items-center justify-content-center mt-5">
                                         <a class="btn btn-primary text-primary fw-bold ms-2 createbtn w-100 py-8 fs-4 rounded-2" asp-controller="User" asp-action="Register">Create an account</a>
                                     </div>
+                                    <div class="d-flex align-items-center justify-content-center mt-3">
+                                        <a asp-controller="Account" asp-action="GoogleLogin" class="text-primary fw-bold ms-2 btn w-100" style="border-color:#5D87FF;">
+                                            <img src="~/userImages/google.png" height="35px" width="35px"> Login with Google
+                                        </a>
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -97,7 +102,7 @@
                         text: '@TempData["error"]',
                         icon: 'error',
                         confirmButtonText: 'Okay'
-                                                                });
+                                                                            });
             </text>
         }
         @if (TempData["alert"] != null)
@@ -113,7 +118,7 @@
             </text>
         }
 
-                                    });
+                                            });
     </script>
     @if (accessor.HttpContext.Request.Cookies["remember_info_shown"] == null)
     {
@@ -123,6 +128,14 @@
             document.cookie = "remember_info_shown=true; path=/";
         </script>
     }
+    <script>
+        @if (TempData["autherror"] != null)
+        {
+            <text>
+                    toastr.error('@TempData["autherror"]')
+            </text>
+        }
+    </script>
 </body>
 
 </html>

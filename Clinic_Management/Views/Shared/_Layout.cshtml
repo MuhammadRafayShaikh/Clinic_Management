@@ -131,9 +131,9 @@
                         <a asp-controller="User" asp-action="VerifyOtp" class="nav-item nav-link">Verification Link</a>
                     }
                     else if (
-                        accessor.HttpContext.Session.GetString("role") == "1" &&
-                        !accessor.HttpContext.Session.Keys.Contains("confirmotp") &&
-                        !accessor.HttpContext.Request.Cookies.Keys.Contains("adminRemember"))
+                    accessor.HttpContext.Session.GetString("role") == "1" &&
+                    !accessor.HttpContext.Session.Keys.Contains("confirmotp") &&
+                    !accessor.HttpContext.Request.Cookies.Keys.Contains("adminRemember"))
                     {
                         <a asp-controller="User" asp-action="VerifyOtp" class="nav-item nav-link">Verification Link</a>
                     }
@@ -147,69 +147,80 @@
 
             @* <button type="button" class="btn text-dark" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fa fa-search"></i></button> *@
             @using System.Text
+            @using System.Security.Claims
+            @inject IHttpContextAccessor accessor
+
             @{
-                bool sessionid = accessor.HttpContext.Session.Keys.Contains("id");
-                bool cookieid = accessor.HttpContext.Request.Cookies.Keys.Contains("id");
-                if (!sessionid && !cookieid)
+                // Flags
+                var isSessionLoggedIn = accessor.HttpContext.Session.Keys.Contains("id");
+                var isCookieLoggedIn = accessor.HttpContext.Request.Cookies.Keys.Contains("id");
+                var isGoogleLoggedIn = User.Identity.IsAuthenticated;
+
+                bool isLoggedIn = isSessionLoggedIn || isCookieLoggedIn || isGoogleLoggedIn;
+
+                string? userName = accessor.HttpContext.Session.GetString("name")
+                ?? accessor.HttpContext.Request.Cookies["name"]
+                ?? User.Identity?.Name;
+
+                string? userEmail = accessor.HttpContext.Session.GetString("email")
+                ?? accessor.HttpContext.Request.Cookies["email"]
+                ?? User.FindFirst(ClaimTypes.Email)?.Value;
+
+                string? userImage = accessor.HttpContext.Session.GetString("image")
+                ?? accessor.HttpContext.Request.Cookies["image"]
+                ?? User.FindFirst("picture")?.Value
+                ?? "user.png";
+
+                if (!string.IsNullOrEmpty(userImage) && accessor.HttpContext.Session.GetString("image") == null)
                 {
-                    <a asp-controller="User" asp-action="Login" asp-route-returnUrl="@Convert.ToBase64String(Encoding.UTF8.GetBytes(Context.Request.Path))" class="btn btn-success py-2 px-4 ms-3">Login</a>
-                    <a asp-controller="User" asp-action="Register" asp-route-returnUrl="@Convert.ToBase64String(Encoding.UTF8.GetBytes(Context.Request.Path))" class="btn btn-primary py-2 px-4 ms-3">Signup</a>
+                    accessor.HttpContext.Session.SetString("image", userImage);
                 }
-
-                else
+                if (!string.IsNullOrEmpty(userName) && accessor.HttpContext.Session.GetString("name") == null)
                 {
-                    string userImage = accessor.HttpContext.Session.GetString("image");
-                    if (string.IsNullOrEmpty(userImage))
-                    {
-                        userImage = accessor.HttpContext.Request.Cookies["image"];
-                        <img width="35" height="35" style="border-radius: 50%;" src="~/UserImages/@userImage" alt="Profile" />
+                    accessor.HttpContext.Session.SetString("name", userName);
+                }
+                if (!string.IsNullOrEmpty(userEmail) && accessor.HttpContext.Session.GetString("email") == null)
+                {
+                    accessor.HttpContext.Session.SetString("email", userEmail);
+                }
+            }
 
-                        if (!string.IsNullOrEmpty(userImage))
+            @if (!isLoggedIn)
+            {
+                <a asp-controller="User" asp-action="Login" asp-route-returnUrl="@Convert.ToBase64String(Encoding.UTF8.GetBytes(Context.Request.Path))" class="btn btn-success py-2 px-4 ms-3">Login</a>
+                <a asp-controller="User" asp-action="Register" asp-route-returnUrl="@Convert.ToBase64String(Encoding.UTF8.GetBytes(Context.Request.Path))" class="btn btn-primary py-2 px-4 ms-3">Signup</a>
+            }
+            else
+            {
+                <img width="35" height="35" style="border-radius: 50%;" src="@(userImage.StartsWith("http") ? userImage : $"/userImages/{userImage}")" alt="Profile" />
+
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">@userName</a>
+                    <div class="dropdown-menu m-0">
+                        @if (!User.Identity.IsAuthenticated)
                         {
-                            accessor.HttpContext.Session.SetString("image", userImage);
-                        }
-                    }
-                    else if (!string.IsNullOrEmpty(userImage))
-                    {
-                        <img width="35" height="35" style="border-radius: 50%;" src="~/UserImages/@userImage" alt="Profile" />
-                    }
-
-                    <div class="nav-item dropdown">
-
-                        @{
-                            string userName = accessor.HttpContext.Session.GetString("name");
-
-                            if (string.IsNullOrEmpty(userName))
-                            {
-                                userName = accessor.HttpContext.Request.Cookies["name"];
-                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">@userName</a>
-
-                                if (!string.IsNullOrEmpty(userName))
-                                {
-                                    accessor.HttpContext.Session.SetString("name", userName);
-                                }
-                            }
-                            else if (!string.IsNullOrEmpty(userName))
-                            {
-                                userName = accessor.HttpContext.Session.GetString("name");
-                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">@userName</a>
-                            }
-                        }
-                        <div class="dropdown-menu m-0">
                             <a asp-controller="Home" asp-action="UpdateProfile" class="dropdown-item">Profile</a>
-                            <a asp-controller="Home" asp-action="ShowOrders" class="dropdown-item">Orders</a>
-                            <a asp-controller="Home" asp-action="ShowBookings" class="dropdown-item">Bookings</a>
-                            @if (accessor.HttpContext.Session.GetString("role") == "3")
-                            {
-                                <a asp-controller="Home" asp-action="ShowAppointments" class="dropdown-item">Appointments</a>
-                            }
-                            <a asp-controller="Home" asp-action="CartItems" class="dropdown-item">Cart</a>
-                            <a asp-controller="User" asp-action="Logout" class="dropdown-item">Logout</a>
-                        </div>
-                    </div>
+                        }
+                        <a asp-controller="Home" asp-action="ShowOrders" class="dropdown-item">Orders</a>
+                        <a asp-controller="Home" asp-action="ShowBookings" class="dropdown-item">Bookings</a>
 
-                    <a asp-controller="User" asp-action="Logout" class="btn btn-primary py-2 px-4 ms-3">Logout</a>
-                }
+                        @if (accessor.HttpContext.Session.GetString("role") == "3")
+                        {
+                            <a asp-controller="Home" asp-action="ShowAppointments" class="dropdown-item">Appointments</a>
+                        }
+
+                        <a asp-controller="Home" asp-action="CartItems" class="dropdown-item">Cart</a>
+
+                        @if (isGoogleLoggedIn)
+                        {
+                            <a asp-controller="Account" asp-action="Logout" class="dropdown-item">Logout</a>
+                        }
+                        else
+                        {
+                            <a asp-controller="User" asp-action="Logout" class="dropdown-item">Logout</a>
+                        }
+                    </div>
+                </div>
             }
         </div>
     </nav>
@@ -319,6 +330,16 @@
                 }
             })
         })
+    </script>
+    <script>
+        var status = navigator.onLine ? "" : toastr.info("It seems look like you are offline!");
+        @if(TempData["autherror"] != null)
+        {
+            <text>
+                    toastr.error('@TempData["autherror"]')
+            </text>
+        }
+        console.log(document.referrer)
     </script>
 
     <!-- JavaScript Libraries -->

@@ -305,6 +305,12 @@
                             toastr.success('@TempData["otpsuccess"]');
                 </text>
             }
+            @if (TempData["autherror"] != null)
+            {
+                <text>
+                            toastr.error('@TempData["autherror"]');
+                </text>
+            }
                     
                         })
         </script>

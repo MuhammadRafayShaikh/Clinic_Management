@@ -1,8 +1,37 @@
+using Clinic_Management.Filters;
 using Clinic_Management.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Authentication services
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+.AddCookie(options =>
+{
+    options.LoginPath = "/User/Login"; // ya jo bhi tumhara login path ho
+})
+.AddGoogle(options =>
+{
+    var googleAuth = builder.Configuration.GetSection("Authentication:Google");
+    options.ClientId = googleAuth["ClientId"];
+    options.ClientSecret = googleAuth["ClientSecret"];
+    options.CallbackPath = googleAuth["CallbackPath"];
+
+    options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+    options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
+    options.ClaimActions.MapJsonKey("picture", "picture");
+
+    options.SaveTokens = true; // optionally save the token
+});
 //var stripeSettings = builder.Configuration.GetSection("Stripe");
 //StripeConfiguration.ApiKey = stripeSettings["SecretKey"];
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
@@ -27,11 +56,11 @@ var provider = builder.Services.BuildServiceProvider();
 var config = provider.GetRequiredService<IConfiguration>();
 
 builder.Services.AddDbContext<myDbContext>(item => item.UseSqlServer(config.GetConnectionString("dbcs")));
-builder.Services.AddAuthentication("Cookies")
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/User/Login";
-    });
+//builder.Services.AddAuthentication("Cookies")
+//    .AddCookie(options =>
+//    {
+//        options.LoginPath = "/User/Login";
+//    });
 
 builder.Services.AddAuthorization();
 //builder.Services.AddControllersWithViews(options =>
@@ -64,7 +93,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<SessionRestoreMiddleware>();
 
 app.MapControllerRoute(
     name: "default",

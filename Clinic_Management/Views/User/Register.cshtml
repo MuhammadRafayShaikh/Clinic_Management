@@ -151,10 +151,32 @@
                         <label class="mt-2 mb-4">Remember Me</label>
                         <input type="checkbox" value="true" name="remember" />
                         <input type="submit" class="btn btn-primary w-100" value="Sign Up">
-                        <div class="d-flex align-items-center justify-content-center mt-4">
+                        <div class="d-flex align-items-center justify-content-center mt-4 mb-2">
                             <a class="text-primary fw-bold ms-2" asp-controller="User" asp-action="Login">Already have an account</a>
                         </div>
                     </form>
+                    <div class="d-flex align-items-center justify-content-center mt-5">
+<a class="text-primary fw-bold ms-2 btn w-100" style="border-color:#5D87FF;" data-bs-toggle="modal" data-bs-target="#googleRoleModal">
+    <img src="~/userImages/google.png" height="35px" width="35px"> Sign up with Google
+</a>
+
+<!-- Modal -->
+<div class="modal fade" id="googleRoleModal" tabindex="-1" aria-labelledby="googleRoleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="googleRoleModalLabel">Sign up as:</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body d-flex justify-content-around">
+        <a class="btn btn-outline-primary" href="@Url.Action("GoogleLogin", "Account", new { role = "user" })">User</a>
+        <a class="btn btn-outline-success" href="@Url.Action("GoogleLogin", "Account", new { role = "patient" })">Patient</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+                        </div>
                 </div>
             </div>
         </div>
