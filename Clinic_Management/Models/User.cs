@@ -48,6 +48,8 @@ namespace Clinic_Management.Models
         public _Gender? Gender { get; set; }
         [MinLength(10, ErrorMessage = "Medical History must be greater than 10 characters")]
         public string? MedicalHistory { get; set; }
+        [NotMapped]
+        public string RecaptchaToken { get; set; }
 
         public _Verified Verified { get; set; } = _Verified.No;
         public enum _Verified

@@ -93,10 +93,17 @@
                         </div>
 
                         <div>
-                            <label class="mt-1 mb-4">Remember Me</label>
+                            <label class="mb-4">Remember Me</label>
                             <input type="checkbox" value="true" name="remember" />
                         </div>
-                        <input type="submit" class="btn btn-primary w-100" value="Sign Up">
+                        <div class="g-recaptcha"
+                             data-sitekey="@ViewBag.SiteKey"
+                             data-callback="onRecaptchaSuccess"></div>
+
+
+                        <input type="hidden" asp-for="RecaptchaToken" id="recaptchaToken" />
+                        <span asp-validation-for="RecaptchaToken" class="text-danger"></span>
+                        <input type="submit" class="btn btn-primary w-100 mt-4" value="Sign Up">
                         <div class="d-flex align-items-center justify-content-center mt-4">
                             <a class="text-primary fw-bold ms-2" asp-controller="User" asp-action="Login">Already have an account</a>
                         </div>
@@ -148,39 +155,87 @@
                             <span asp-validation-for="MedicalHistory" class="text-danger"></span>
                         </div>
                         <br />
-                        <label class="mt-2 mb-4">Remember Me</label>
+                        <label class="mt-1 mb-4">Remember Me</label>
                         <input type="checkbox" value="true" name="remember" />
-                        <input type="submit" class="btn btn-primary w-100" value="Sign Up">
+                        <div class="g-recaptcha"
+                             data-sitekey="@ViewBag.SiteKey"
+                             data-callback="onRecaptchaSuccess"></div>
+
+
+                        <input type="hidden" asp-for="RecaptchaToken" id="recaptchaToken" />
+                        <span asp-validation-for="RecaptchaToken" class="text-danger"></span>
+
+                        <input type="submit" class="btn btn-primary w-100 mt-4" value="Sign Up">
                         <div class="d-flex align-items-center justify-content-center mt-4 mb-2">
                             <a class="text-primary fw-bold ms-2" asp-controller="User" asp-action="Login">Already have an account</a>
                         </div>
                     </form>
                     <div class="d-flex align-items-center justify-content-center mt-5">
-<a class="text-primary fw-bold ms-2 btn w-100" style="border-color:#5D87FF;" data-bs-toggle="modal" data-bs-target="#googleRoleModal">
-    <img src="~/userImages/google.png" height="35px" width="35px"> Sign up with Google
-</a>
+                        <!-- First Modal -->
+                        <a class="text-primary fw-bold ms-2 btn w-100" style="border-color:#5D87FF;" data-bs-toggle="modal" data-bs-target="#googleRoleModal">
+                            <img src="~/userImages/google.png" height="35px" width="35px"> Sign up with Google
+                        </a>
 
-<!-- Modal -->
-<div class="modal fade" id="googleRoleModal" tabindex="-1" aria-labelledby="googleRoleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="googleRoleModalLabel">Sign up as:</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body d-flex justify-content-around">
-        <a class="btn btn-outline-primary" href="@Url.Action("GoogleLogin", "Account", new { role = "user" })">User</a>
-        <a class="btn btn-outline-success" href="@Url.Action("GoogleLogin", "Account", new { role = "patient" })">Patient</a>
-      </div>
-    </div>
-  </div>
-</div>
-
+                        <div class="modal fade" id="googleRoleModal" tabindex="-1" aria-labelledby="googleRoleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="googleRoleModalLabel">Sign up as:</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body d-flex justify-content-around">
+                                        <a class="btn btn-outline-primary" href="@Url.Action("GoogleLogin", "Account", new { role = "user" })">User</a>
+                                        <button class="btn btn-outline-success" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#patientExtraInfoModal">Patient</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Second Modal for Patient Extra Info -->
+                        <div class="modal fade" id="patientExtraInfoModal" tabindex="-1" aria-labelledby="patientExtraInfoModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form method="get" action="@Url.Action("GoogleLogin", "Account", new { role = "patient" })" id="patientGoogleForm">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="patientExtraInfoModalLabel">Patient Information</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input type="hidden" name="role" value="patient" />
+                                            <div class="mb-3">
+                                                <label for="gender" class="form-label">Gender</label>
+                                                <select class="form-control" asp-for="Gender" id="Gendergoogle" name="Gendergoogle" asp-items="Html.GetEnumSelectList<Clinic_Management.Models.User._Gender>()">
+                                                    <option selected disabled>Select Gender</option>
+                                                </select>
+
+
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="medicalHistory" class="form-label">Medical History</label>
+                                                <textarea class="form-control" id="MedicalHistorygoogle" name="MedicalHistorygoogle" asp-for="MedicalHistory" rows="3"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Continue with Google</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        function onRecaptchaSuccess(token) {
+            document.getElementById("recaptchaToken").value = token;
+        }
+    </script>
+
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <script>
         $(document).ready(function () {
@@ -214,7 +269,7 @@
             })
         })
     </script>
-    
+
     <script src="~/assets/libs/jquery/dist/jquery.min.js"></script>
     <script src="~/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -229,7 +284,7 @@
                         text: '@TempData["email_err"]',
                         icon: 'error',
                         confirmButtonText: 'Okay'
-                                                                });
+                                                                                                                            });
             </text>
         }
         @if (TempData["error"] != null)
@@ -240,10 +295,10 @@
                         text: '@TempData["error"]',
                         icon: 'error',
                         confirmButtonText: 'Okay'
-                                                                            });
+                                                                                                                                        });
             </text>
         }
-                            });
+                                                                    });
     </script>
 
 
@@ -265,6 +320,31 @@
                     }
                 });
             });
+
+            
+
+        });
+    </script>
+    <script>
+        $("#patientGoogleForm").on("submit", function (e) {
+            e.preventDefault();
+
+            var gender = $("#Gendergoogle").val();
+            var medicalhistory = $("#MedicalHistorygoogle").val().trim();
+
+            if (gender == null || medicalhistory == "") {
+                toastr.clear();
+                toastr.error('Please fill all fields');
+                return false;
+            }
+
+            if(medicalhistory.length < 10){
+                toastr.clear();
+                toastr.error("Medical History must be greater than 10 characters");
+                return false;
+            }
+
+            this.submit();
         });
     </script>
 

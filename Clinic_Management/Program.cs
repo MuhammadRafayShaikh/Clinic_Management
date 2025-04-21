@@ -40,6 +40,8 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 
 builder.Services.Configure<TwilioSettings>(builder.Configuration.GetSection("Twilio"));
 
+builder.Services.Configure<GoogleReCAPTCHA>(builder.Configuration.GetSection("GoogleReCAPTCHA"));
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 

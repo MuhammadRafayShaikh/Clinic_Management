@@ -34,13 +34,15 @@ namespace Clinic_Management.Controllers
         private readonly StripeSettings _stripeSettings;
         private readonly IWebHostEnvironment webHostEnvironment;
         private readonly EmailSettings emailSettings;
+        private readonly GoogleReCAPTCHA googleReCAPTCHA;
 
         public HomeController(
             ILogger<HomeController> logger,
             myDbContext myDbContext,
             IOptions<StripeSettings> stripeSettings,
             IWebHostEnvironment webHostEnvironment,
-            IOptions<EmailSettings> emailSettings
+            IOptions<EmailSettings> emailSettings,
+            IOptions<GoogleReCAPTCHA> googleReCAPTCHA
             )
         {
             _logger = logger;
@@ -48,6 +50,7 @@ namespace Clinic_Management.Controllers
             _stripeSettings = stripeSettings.Value;
             this.webHostEnvironment = webHostEnvironment;
             this.emailSettings = emailSettings.Value;
+            this.googleReCAPTCHA = googleReCAPTCHA.Value;
         }
         //[Authorize]
 
@@ -1253,19 +1256,14 @@ namespace Clinic_Management.Controllers
         }
         public IActionResult Contact()
         {
-            //string previousUrl = Request.Headers["Referer"].ToString();
-            //TempData["previousUrl"] = previousUrl;
-            //return Json(previousUrl);
             ViewData["CurrentAction"] = "Contact";
             ViewData["CurrentController"] = "Home";
             return View();
         }
         [ValidateAntiForgeryToken]
-        //[AuthenticationFilter]
         [HttpPost]
         public async Task<IActionResult> Contact(Contact contact, string returnUrlContact)
         {
-
             if (!string.IsNullOrEmpty(contact.Subject))
             {
                 Response.Cookies.Append("subject", contact.Subject);
@@ -1292,11 +1290,9 @@ namespace Clinic_Management.Controllers
                 TempData["alert"] = "Please verify your email by OTP, we sent it to your email";
                 return RedirectToAction("VerifyOtp", "User");
             }
-            //TempData["subject"] = contact.Subject;
-            //return Json(ModelState);
+
             if (ModelState.IsValid)
             {
-                //if(HttpContext.Session.GetString("id"))
                 contact.UserId = Convert.ToInt32(HttpContext.Session.GetString("id"));
 
                 await myDbContext.Contact.AddAsync(contact);
@@ -1306,13 +1302,8 @@ namespace Clinic_Management.Controllers
                 Response.Cookies.Delete("message");
 
                 TempData["success"] = "Form submitted successfully, We will contact you ASAP";
-                //if (TempData["previousUrl"] != null)
-                //{
-                //    return Redirect(TempData["previousUrl"].ToString());
-
-                //}
+                
                 return RedirectToAction("Index");
-                //return Json(contact);
             }
             return View();
         }

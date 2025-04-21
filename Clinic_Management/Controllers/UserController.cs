@@ -13,6 +13,7 @@ using Stripe;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
+using Clinic_Management.Migrations;
 
 namespace Clinic_Management.Controllers
 {
@@ -22,17 +23,20 @@ namespace Clinic_Management.Controllers
         private readonly IWebHostEnvironment webHostEnvironment;
         private readonly EmailSettings emailSettings;
         private readonly TwilioSettings twilioSettings;
+        private readonly GoogleReCAPTCHA googleReCAPTCHA;
         public UserController(
             myDbContext myDbContext,
             IWebHostEnvironment webHostEnvironment,
             IOptions<EmailSettings> emailSettings,
-            IOptions<TwilioSettings> twilioSettings
+            IOptions<TwilioSettings> twilioSettings,
+            IOptions<GoogleReCAPTCHA> googleReCAPTCHA
             )
         {
             this.webHostEnvironment = webHostEnvironment;
             this.myDbContext = myDbContext;
             this.emailSettings = emailSettings.Value;
             this.twilioSettings = twilioSettings.Value;
+            this.googleReCAPTCHA = googleReCAPTCHA.Value;
         }
 
         private async Task SendingEmail(string email, string subject, string body)
@@ -70,8 +74,22 @@ namespace Clinic_Management.Controllers
             var verifyOtp = await myDbContext.VerifiedUsers.AnyAsync(x => x.UserId == Convert.ToInt32(HttpContext.Session.GetString("id")));
             return verifyOtp;
         }
+
+        private async Task<bool> VerifyCaptcha(string token)
+        {
+            var secret = googleReCAPTCHA.SecretKey;
+            using var httpClient = new HttpClient();
+            var response = await httpClient.PostAsync(
+                $"https://www.google.com/recaptcha/api/siteverify?secret={secret}&response={token}",
+                null
+            );
+            var jsonString = await response.Content.ReadAsStringAsync();
+            dynamic result = Newtonsoft.Json.JsonConvert.DeserializeObject(jsonString);
+            return result.success == true;
+        }
         public IActionResult Register(string? email = null, string? returnUrl = null)
         {
+            ViewBag.SiteKey = googleReCAPTCHA.SiteKey;
             try
             {
                 if (!string.IsNullOrEmpty(returnUrl))
@@ -110,6 +128,7 @@ namespace Clinic_Management.Controllers
         public async Task<IActionResult> Register(User user, IFormFile? Image, string? remember)
         {
             //return Json(DateTime.Now.AddMinutes(5).ToString());
+            ViewBag.SiteKey = googleReCAPTCHA.SiteKey;
             if (string.IsNullOrEmpty(user.Phone))
             {
                 ModelState.AddModelError("Phone", "Phone is required");
@@ -128,6 +147,12 @@ namespace Clinic_Management.Controllers
             }
             if (ModelState.IsValid)
             {
+                var isCaptchaValid = await this.VerifyCaptcha(user.RecaptchaToken);
+                if (!isCaptchaValid)
+                {
+                    ModelState.AddModelError("RecaptchaToken", "ReCAPTCHA verification failed.");
+                    return View(user);
+                }
                 //return Json(Image);
                 if (Image != null)
                 {
@@ -202,6 +227,7 @@ namespace Clinic_Management.Controllers
                 }
                 else
                 {
+                    //ModelState.AddModelError("Email", "Email Already Exist");
                     ViewBag.email = user.Email;
                     TempData["email_err"] = "Email Already Exists";
                     return View(user);
@@ -239,6 +265,7 @@ namespace Clinic_Management.Controllers
 
         public IActionResult Login(string? returnUrl)
         {
+            ViewBag.SiteKey = googleReCAPTCHA.SiteKey;
             //return Json(returnUrl.ToArray());
             //return Json(returnUrl);
             try
@@ -270,9 +297,16 @@ namespace Clinic_Management.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(User user, string? returnUrl, string remember)
         {
+            ViewBag.SiteKey = googleReCAPTCHA.SiteKey;
             if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
             {
                 TempData["error"] = "Please Fill All Fields";
+                return View(user);
+            }
+            var isCaptchaValid = await this.VerifyCaptcha(user.RecaptchaToken);
+            if (!isCaptchaValid)
+            {
+                ModelState.AddModelError("RecaptchaToken", "ReCAPTCHA verification failed.");
                 return View(user);
             }
             var userData = await myDbContext.Users.Where(x => x.Email == user.Email).FirstOrDefaultAsync();

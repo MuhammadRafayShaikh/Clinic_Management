@@ -69,7 +69,14 @@
                                         <label class="mt-2">Remember Me</label>
                                         <input type="checkbox" value="true" name="remember" />
                                     </div>
-                                    <input type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" value="Sign In" />
+                                    <div class="g-recaptcha"
+                                         data-sitekey="@ViewBag.SiteKey"
+                                         data-callback="onRecaptchaSuccess"></div>
+
+
+                                    <input type="hidden" asp-for="RecaptchaToken" id="recaptchaToken" />
+                                    <span asp-validation-for="RecaptchaToken" class="text-danger"></span>
+                                    <input type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2 mt-4" value="Sign In" />
                                     <div class="d-flex align-items-center justify-content-center">
                                         <a class="text-dark fw-bold ms-2" asp-controller="User" asp-action="ForgotPassword">Forgot Password?</a>
                                     </div>
@@ -90,6 +97,14 @@
             </div>
         </div>
     </div>
+    <script>
+        function onRecaptchaSuccess(token) {
+            document.getElementById("recaptchaToken").value = token;
+        }
+    </script>
+
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
     <script src="~/assets/libs/jquery/dist/jquery.min.js"></script>
     <script src="~/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script>

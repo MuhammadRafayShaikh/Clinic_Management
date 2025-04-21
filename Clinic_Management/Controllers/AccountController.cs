@@ -18,7 +18,7 @@ namespace Clinic_Management.Controllers
         {
             this.myDbContext = myDbContext;
         }
-        public IActionResult GoogleLogin(string? role)
+        public IActionResult GoogleLogin(string? role, Models.User._Gender? Gendergoogle, string? MedicalHistorygoogle)
         {
             if (User.Identity.IsAuthenticated)
             {
@@ -27,14 +27,14 @@ namespace Clinic_Management.Controllers
 
             var properties = new AuthenticationProperties
             {
-                RedirectUri = Url.Action("GoogleResponse", new { role = role }) ?? "/"
+                RedirectUri = Url.Action("GoogleResponse", new { role = role, Gender = Gendergoogle, MedicalHistory = MedicalHistorygoogle }) ?? "/"
             };
 
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
 
-        public async Task<IActionResult> GoogleResponse(string role)
+        public async Task<IActionResult> GoogleResponse(string role, Models.User._Gender? Gender, string? MedicalHistory)
         {
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -49,7 +49,7 @@ namespace Clinic_Management.Controllers
 
             if (user == null)
             {
-                if(role == "patient")
+                if (role == "patient")
                 {
                     user = new User
                     {
@@ -58,7 +58,8 @@ namespace Clinic_Management.Controllers
                         Password = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)),
                         Phone = null,
                         Address = null,
-                        Gender = null,
+                        Gender = Gender,
+                        MedicalHistory = MedicalHistory,
                         Created_at = DateTime.Now,
                         Updated_at = DateTime.Now,
                         Role = 3,
@@ -83,7 +84,7 @@ namespace Clinic_Management.Controllers
                         Verified = Models.User._Verified.Yes
                     };
                 }
-                
+
 
                 myDbContext.Users.Add(user);
                 await myDbContext.SaveChangesAsync();
