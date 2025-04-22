@@ -995,9 +995,9 @@ namespace Clinic_Management.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateProfile(User user, IFormFile? Image)
         {
-            //return Json(user);
             ModelState.Remove("Password");
             ModelState.Remove("ConfirmPassword");
+            ModelState.Remove("RecaptchaToken");
             var emailCheck = await myDbContext.Users
                 .Where(x => x.Email == user.Email && x.Id != user.Id)
                 .FirstOrDefaultAsync();
@@ -1139,7 +1139,7 @@ namespace Clinic_Management.Controllers
                     HttpContext.Session.SetString("medicalhistory", userData.MedicalHistory);
                 }
                 TempData["success"] = "Your Profile Update Successfully";
-                if (HttpContext.Session.GetString("role") == "2")
+                if (HttpContext.Session.GetString("role") == "2" || HttpContext.Session.GetString("role") == "1")
                 {
                     return RedirectToAction("Index", "Admin");
                 }

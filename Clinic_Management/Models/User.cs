@@ -52,6 +52,7 @@ namespace Clinic_Management.Models
         public string RecaptchaToken { get; set; }
 
         public _Verified Verified { get; set; } = _Verified.No;
+        public _Provider Provider { get; set; } = _Provider.Normal;
         public enum _Verified
         {
             No,
@@ -71,6 +72,11 @@ namespace Clinic_Management.Models
             Female
         }
 
+        public enum _Provider
+        {
+            Normal,
+            Google
+        }
         public List<DoctorTimeSlot>? doctorTimeSlots { get; set; }
         public ICollection<Appointments>? DoctorAppointments { get; set; }
 

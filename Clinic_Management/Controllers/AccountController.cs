@@ -18,7 +18,7 @@ namespace Clinic_Management.Controllers
         {
             this.myDbContext = myDbContext;
         }
-        public IActionResult GoogleLogin(string? role, Models.User._Gender? Gendergoogle, string? MedicalHistorygoogle)
+        public IActionResult GoogleLogin(string? email, string? role, Models.User._Gender? Gendergoogle, string? MedicalHistorygoogle)
         {
             if (User.Identity.IsAuthenticated)
             {
@@ -29,6 +29,11 @@ namespace Clinic_Management.Controllers
             {
                 RedirectUri = Url.Action("GoogleResponse", new { role = role, Gender = Gendergoogle, MedicalHistory = MedicalHistorygoogle }) ?? "/"
             };
+
+            if (!string.IsNullOrEmpty(email))
+            {
+                properties.Items["login_hint"] = email;  // 👈 this tells Google to suggest this email
+            }
 
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
@@ -64,7 +69,8 @@ namespace Clinic_Management.Controllers
                         Updated_at = DateTime.Now,
                         Role = 3,
                         Image = picture ?? "user.png",
-                        Verified = Models.User._Verified.Yes
+                        Verified = Models.User._Verified.Yes,
+                        Provider = Models.User._Provider.Google
                     };
                 }
                 else
@@ -81,7 +87,8 @@ namespace Clinic_Management.Controllers
                         Updated_at = DateTime.Now,
                         Role = 0,
                         Image = picture ?? "user.png",
-                        Verified = Models.User._Verified.Yes
+                        Verified = Models.User._Verified.Yes,
+                        Provider = Models.User._Provider.Google
                     };
                 }
 
@@ -96,6 +103,7 @@ namespace Clinic_Management.Controllers
             HttpContext.Session.SetString("email", user.Email);
             HttpContext.Session.SetString("image", user.Image);
             HttpContext.Session.SetString("role", user.Role.ToString());
+            HttpContext.Session.SetString("provider", user.Provider.ToString());
 
             HttpContext.Session.SetString("confirmotp", "done");
             //return Redirect(Request.Headers["Referer"].ToString() ?? "/");

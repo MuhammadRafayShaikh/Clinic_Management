@@ -298,6 +298,18 @@ namespace Clinic_Management.Controllers
         public async Task<IActionResult> Login(User user, string? returnUrl, string remember)
         {
             ViewBag.SiteKey = googleReCAPTCHA.SiteKey;
+            var userData = await myDbContext.Users.Where(x => x.Email == user.Email).FirstOrDefaultAsync();
+            if (userData != null && userData.Provider == Models.User._Provider.Google)
+            {
+                if (userData.Role == 0)
+                {
+                    return RedirectToAction("GoogleLogin", "Account", new { email = user.Email, role = "user" });
+                }
+                else
+                {
+                    return RedirectToAction("GoogleLogin", "Account", new { email = user.Email, role = "patient" });
+                }
+            }
             if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
             {
                 TempData["error"] = "Please Fill All Fields";
@@ -309,7 +321,7 @@ namespace Clinic_Management.Controllers
                 ModelState.AddModelError("RecaptchaToken", "ReCAPTCHA verification failed.");
                 return View(user);
             }
-            var userData = await myDbContext.Users.Where(x => x.Email == user.Email).FirstOrDefaultAsync();
+
             //return Json(userData);
             if (userData != null)
             {
