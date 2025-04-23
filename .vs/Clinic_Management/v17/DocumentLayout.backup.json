@@ -7,6 +7,10 @@
       "RelativeMoniker": "D:0:0:{B361C460-DFC1-4C53-97A5-2907166BBE77}|Clinic_Management\\Clinic_Management.csproj|solutionrelative:clinic_management\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{B361C460-DFC1-4C53-97A5-2907166BBE77}|Clinic_Management\\Clinic_Management.csproj|c:\\users\\rohaan\\source\\repos\\healthsphere\\clinic_management\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B361C460-DFC1-4C53-97A5-2907166BBE77}|Clinic_Management\\Clinic_Management.csproj|solutionrelative:clinic_management\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{B361C460-DFC1-4C53-97A5-2907166BBE77}|Clinic_Management\\Clinic_Management.csproj|c:\\users\\rohaan\\source\\repos\\healthsphere\\clinic_management\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B361C460-DFC1-4C53-97A5-2907166BBE77}|Clinic_Management\\Clinic_Management.csproj|solutionrelative:clinic_management\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -17,10 +21,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{B361C460-DFC1-4C53-97A5-2907166BBE77}|Clinic_Management\\Clinic_Management.csproj|c:\\users\\rohaan\\source\\repos\\healthsphere\\clinic_management\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B361C460-DFC1-4C53-97A5-2907166BBE77}|Clinic_Management\\Clinic_Management.csproj|solutionrelative:clinic_management\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B361C460-DFC1-4C53-97A5-2907166BBE77}|Clinic_Management\\Clinic_Management.csproj|c:\\users\\rohaan\\source\\repos\\healthsphere\\clinic_management\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B361C460-DFC1-4C53-97A5-2907166BBE77}|Clinic_Management\\Clinic_Management.csproj|solutionrelative:clinic_management\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B361C460-DFC1-4C53-97A5-2907166BBE77}|Clinic_Management\\Clinic_Management.csproj|c:\\users\\rohaan\\source\\repos\\healthsphere\\clinic_management\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -85,6 +85,18 @@
           "SelectedChildIndex": 9,
           "Children": [
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{74946827-37a0-11d2-a273-00c04f8ef4ff}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
               "$type": "Document",
               "DocumentIndex": 11,
               "Title": "appsettings.json",
@@ -96,18 +108,6 @@
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2025-04-08T15:17:19.425Z",
               "IsPinned": true
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{74946827-37a0-11d2-a273-00c04f8ef4ff}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
             },
             {
               "$type": "Document",
@@ -123,7 +123,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "UserController.cs",
               "DocumentMoniker": "C:\\Users\\Rohaan\\source\\repos\\HealthSphere\\Clinic_Management\\Controllers\\UserController.cs",
               "RelativeDocumentMoniker": "Clinic_Management\\Controllers\\UserController.cs",
@@ -175,16 +175,16 @@
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\Rohaan\\source\\repos\\HealthSphere\\Clinic_Management\\Views\\Home\\Index.cshtml",
               "RelativeDocumentMoniker": "Clinic_Management\\Views\\Home\\Index.cshtml",
-              "ToolTip": "C:\\Users\\Rohaan\\source\\repos\\HealthSphere\\Clinic_Management\\Views\\Home\\Index.cshtml*",
-              "RelativeToolTip": "Clinic_Management\\Views\\Home\\Index.cshtml*",
-              "ViewState": "AgIAABkBAAAAAAAAAAAAADwBAAA4AAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\Rohaan\\source\\repos\\HealthSphere\\Clinic_Management\\Views\\Home\\Index.cshtml",
+              "RelativeToolTip": "Clinic_Management\\Views\\Home\\Index.cshtml",
+              "ViewState": "AgIAACEBAAAAAAAAAAAqwCoBAABAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-04-20T10:44:43.447Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "User.cs",
               "DocumentMoniker": "C:\\Users\\Rohaan\\source\\repos\\HealthSphere\\Clinic_Management\\Models\\User.cs",
               "RelativeDocumentMoniker": "Clinic_Management\\Models\\User.cs",
@@ -196,13 +196,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "HomeController.cs",
               "DocumentMoniker": "C:\\Users\\Rohaan\\source\\repos\\HealthSphere\\Clinic_Management\\Controllers\\HomeController.cs",
               "RelativeDocumentMoniker": "Clinic_Management\\Controllers\\HomeController.cs",
-              "ToolTip": "C:\\Users\\Rohaan\\source\\repos\\HealthSphere\\Clinic_Management\\Controllers\\HomeController.cs*",
-              "RelativeToolTip": "Clinic_Management\\Controllers\\HomeController.cs*",
-              "ViewState": "AgIAAFwAAAAAAAAAAAAQwG0AAAAfAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\Rohaan\\source\\repos\\HealthSphere\\Clinic_Management\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "Clinic_Management\\Controllers\\HomeController.cs",
+              "ViewState": "AgIAAGMAAAAAAAAAAAAqwH0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-20T10:38:44.308Z",
               "EditorCaption": ""
@@ -221,15 +221,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
               "Title": "_Layout.cshtml",
               "DocumentMoniker": "C:\\Users\\Rohaan\\source\\repos\\HealthSphere\\Clinic_Management\\Views\\Shared\\_Layout.cshtml",
               "RelativeDocumentMoniker": "Clinic_Management\\Views\\Shared\\_Layout.cshtml",
               "ToolTip": "C:\\Users\\Rohaan\\source\\repos\\HealthSphere\\Clinic_Management\\Views\\Shared\\_Layout.cshtml",
               "RelativeToolTip": "Clinic_Management\\Views\\Shared\\_Layout.cshtml",
-              "ViewState": "AgIAADgBAAAAAAAAAAAAAEcBAABKAAAAAAAAAA==",
+              "ViewState": "AgIAAFoAAAAAAAAAAAAqwG4AAABkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-02-13T18:11:50.625Z"
+              "WhenOpened": "2025-02-13T18:11:50.625Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
