@@ -119,6 +119,9 @@ namespace Clinic_Management.Controllers
             ViewBag.doctordetails = doctors;
             //if (HttpContext.Session.GetString("user_id") != null)
             //{
+
+            //var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+            //ViewBag.ip = ip;
             return View();
 
             //}
